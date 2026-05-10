@@ -114,7 +114,26 @@ DEVICE_NAME="iPhone 16" ./scripts/smarttests-ios-simulator.sh
 
 ## ExploreChimp
 
-When enabled, set **`EXPLORECHIMP_ENABLED`** and keep **`TESTCHIMP_PROJECT_TYPE=ios`** on every run. Narrow **`## ExploreChimp`** (sources, network regex) here after the first exploration batch per `references/exploratory_runs.md`.
+- **`TESTCHIMP_PROJECT_TYPE`:** `ios` (from **`tc-tests/.testchimp-tests`**; **`npm test`** / launcher sets this.)
+- **Targets:** UI SmartTests with **`markScreenState`** — primarily **`tc-tests/order-flow.spec.js`** (**#TS-100**, **#TS-101**). **`smoke.quick.spec.js`** is not an ExploreChimp target (no UI journey / markers).
+- **`TESTCHIMP_BATCH_INVOCATION_ID`:** Set a **new** value per exploration batch (correlates analysis in TestChimp). Example pattern: `explore-ios-<git-short>-<unix_ts>`.
+- **`TESTCHIMP_BRANCH_NAME`:** Launcher fills from **`git branch --show-current`** when unset — keeps **`branch_id`** resolution on the server for local runs.
+- **Credentials / backend:** Same as normal runs — **`scripts/run-mobilewright-with-mcp-env.mjs`** merges **`TESTCHIMP_API_KEY`** and **`TESTCHIMP_BACKEND_URL`** from **`.cursor/mcp.json`**.
+- **`NETWORK` regex:** Not configured yet (no documented app API host in this repo). Until **`EXPLORECHIMP_REQUEST_REGEX_TO_ANALYZE`** is set for the Milliways backend(s), use **`EXPLORECHIMP_SOURCES_TO_ANALYZE=DOM,SCREENSHOT,CONSOLE,METRICS`** so **`NETWORK`** is omitted intentionally (avoids the “regex missing — network disabled” warning while default is all five sources).
+- **Default sources (current):** `DOM,SCREENSHOT,CONSOLE,METRICS` (see above).
+
+**Example — ExploreChimp on written order flows (after `make build`):**
+
+```bash
+cd /path/to/Milliways-ios
+export IOS_APP_PATH="$PWD/build/Build/Products/Debug-iphonesimulator/Milliways.app"
+export EXPLORECHIMP_ENABLED=true
+export EXPLORECHIMP_SOURCES_TO_ANALYZE=DOM,SCREENSHOT,CONSOLE,METRICS
+export TESTCHIMP_BATCH_INVOCATION_ID="explore-ios-$(git rev-parse --short HEAD)-$(date +%s)"
+node scripts/run-mobilewright-with-mcp-env.mjs order-flow.spec.js
+```
+
+Review the exploration / journeys in the TestChimp UI using the batch id and branch. When app API hosts are known, add **`EXPLORECHIMP_REQUEST_REGEX_TO_ANALYZE`** and include **`NETWORK`** in sources if useful.
 
 ---
 
