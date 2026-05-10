@@ -3,12 +3,12 @@
 # step or env that sets TESTCHIMP_BACKEND_URL (e.g. https://featureservice-staging.testchimp.io);
 # otherwise the reporter defaults to production and runs will not appear in the staging UI.
 # MOBILE_USE_API_KEY is intentionally not passed to this job; CI runs on the macOS Simulator.
+#
+# DISABLED: Default org CI is Linux-only; iOS Simulator needs macOS. Restore pull_request/push below
+# and remove `if: false` on the job when macOS runners are available.
 name: SmartTests (iOS Simulator)
 
 on:
-  pull_request:
-  push:
-    branches: [main, master]
   workflow_dispatch:
 
 concurrency:
@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   smarttests:
+    if: false
     runs-on: macos-latest
     env:
       TESTCHIMP_API_KEY: ${{ secrets.TESTCHIMP_API_KEY }}
