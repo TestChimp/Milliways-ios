@@ -149,6 +149,13 @@ struct MenuView: View {
 
         do {
             menuSections = try await APIClient.shared.fetchMenu()
+            MilliwaysRum.emit(
+                "menu_loaded",
+                metadata: [
+                    "menu.section_count_bucket": MilliwaysRum.menuSectionCountBucket(menuSections.count),
+                    "cart.line_item_count_bucket": MilliwaysRum.lineItemCountBucket(orderManager.items.count),
+                ]
+            )
         } catch {
             menuError = error.localizedDescription
         }

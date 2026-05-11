@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node ../scripts/run-mobilewright-with-mcp-env.mjs",
-    "test:smoke": "node ../scripts/run-mobilewright-with-mcp-env.mjs smoke.quick.spec.js",
+    "test": "node ../../scripts/run-mobilewright-with-mcp-env.mjs",
+    "test:smoke": "node ../../scripts/run-mobilewright-with-mcp-env.mjs smoke.quick.spec.js",
     "doctor": "npx mobilewright doctor"
   },
   "dependencies": {

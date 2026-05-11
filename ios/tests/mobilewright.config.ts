@@ -1,7 +1,7 @@
 import { defineConfig, type MobilewrightConfig } from 'mobilewright';
 
 // Cloud (mobile-use) needs a device .ipa; local simulators need a Debug-iphonesimulator .app
-// (`make ipa` vs `make build` from the repo root — see Makefile).
+// (`make ipa` vs `make build` from the `ios/` directory — see `ios/Makefile`).
 const useMobileUse = Boolean(process.env['MOBILE_USE_API_KEY']);
 
 const config: MobilewrightConfig = {

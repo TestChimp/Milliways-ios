@@ -1,4 +1,4 @@
-# SmartTests (mapped root: tc-tests) on iOS Simulator with local Docker backend.
+# SmartTests (mapped root: ios/tc-tests) on iOS Simulator with local Docker backend.
 # Secrets: TESTCHIMP_API_KEY (required). If your project uses staging FeatureService, add a workflow
 # step or env that sets TESTCHIMP_BACKEND_URL (e.g. https://featureservice-staging.testchimp.io);
 # otherwise the reporter defaults to production and runs will not appear in the staging UI.
@@ -26,7 +26,7 @@ jobs:
       MILLIWAYS_API_BASE_URL: http://localhost:3001
       # GitHub-hosted macOS images vary; override Makefile default if builds fail on "device not found".
       DEVICE_NAME: iPhone 16
-      IOS_APP_PATH: ${{ github.workspace }}/build/Build/Products/Debug-iphonesimulator/Milliways.app
+      IOS_APP_PATH: ${{ github.workspace }}/ios/build/Build/Products/Debug-iphonesimulator/Milliways.app
     steps:
       - uses: actions/checkout@v5
 
@@ -65,11 +65,11 @@ jobs:
           exit 1
 
       - name: Build Debug app for Simulator
-        working-directory: ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}/ios
         run: make build
 
       - name: Boot Simulator (best-effort)
-        working-directory: ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}/ios
         run: make boot
 
       - name: Wait for Simulator .app
@@ -80,11 +80,11 @@ jobs:
         run: xcrun simctl install booted "$IOS_APP_PATH"
 
       - name: Install tc-tests dependencies
-        working-directory: tc-tests
+        working-directory: ios/tc-tests
         run: npm ci
 
       - name: Run SmartTests order flow
-        working-directory: tc-tests
+        working-directory: ios/tc-tests
         run: npm test -- order-flow.spec.js
 
       - name: Show backend logs on failure
@@ -106,4 +106,4 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: mobilewright-report-tc-tests
-          path: tc-tests/mobilewright-report
+          path: ios/tc-tests/mobilewright-report

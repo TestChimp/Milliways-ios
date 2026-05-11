@@ -18,14 +18,16 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode.app
 
       - name: Build unsigned IPA
+        working-directory: ios
         run: make ipa
 
       - name: Build simulator zip
+        working-directory: ios
         run: make zip
 
       - name: Upload artifacts to release
         uses: softprops/action-gh-release@v3
         with:
           files: |
-            build/Milliways-unsigned.ipa
-            build/Milliways-simulator.zip
+            ios/build/Milliways-unsigned.ipa
+            ios/build/Milliways-simulator.zip

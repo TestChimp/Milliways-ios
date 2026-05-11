@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * Run Mobilewright from `tc-tests/` with TestChimp env merged from repo `.cursor/mcp.json`
+ * Run Mobilewright from `ios/tc-tests/` with TestChimp env merged from repo `.cursor/mcp.json`
  * (same `testchimp` server block as Cursor MCP: API key + backend URL for staging).
  *
- * Usage (from repo root or tc-tests via npm scripts):
+ * Usage (from repo root or `ios/tc-tests` via npm scripts):
  *   node scripts/run-mobilewright-with-mcp-env.mjs [args...passed to `npx mobilewright test`...]
  *
  * Examples:
@@ -18,7 +18,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, '..');
-const tcTestsRoot = join(repoRoot, 'tc-tests');
+const tcTestsRoot = join(repoRoot, 'ios', 'tc-tests');
 const mcpPath = join(repoRoot, '.cursor', 'mcp.json');
 
 const env = { ...process.env };

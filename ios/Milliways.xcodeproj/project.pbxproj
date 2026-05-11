@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3A1F2E023EBB7CE1001943C1 /* TestChimpRum in Frameworks */ = {isa = PBXBuildFile; productRef = 3A1F2E013EBB7CE1001943C1 /* TestChimpRum */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		2D9BE56E2EBB7CE1001943C4 /* Milliways.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Milliways.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A1F2E023EBB7CE1001943C1 /* TestChimpRum in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = Milliways;
 			packageProductDependencies = (
+				3A1F2E013EBB7CE1001943C1 /* TestChimpRum */,
 			);
 			productName = Milliways;
 			productReference = 2D9BE56E2EBB7CE1001943C4 /* Milliways.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 2D9BE5652EBB7CE0001943C4;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3A1F2E003EBB7CE1001943C1 /* XCRemoteSwiftPackageReference "testchimp-rum-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2D9BE56F2EBB7CE1001943C4 /* Products */;
 			projectDirPath = "";
@@ -256,6 +265,7 @@
 				DEVELOPMENT_TEAM = H4GC96RA9D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Milliways-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -277,6 +287,10 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TESTCHIMP_API_KEY = "53a8588f-688b-446b-9925-35196e86f965";
+				TESTCHIMP_BACKEND_URL = "https://featureservice-staging.testchimp.io";
+				TESTCHIMP_ENV = QA;
+				TESTCHIMP_PROJECT_ID = "f241349a-70f6-48ec-b213-e09ff8520386";
 			};
 			name = Debug;
 		};
@@ -290,6 +304,7 @@
 				DEVELOPMENT_TEAM = H4GC96RA9D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Milliways-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -311,6 +326,10 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TESTCHIMP_API_KEY = "53a8588f-688b-446b-9925-35196e86f965";
+				TESTCHIMP_BACKEND_URL = "https://featureservice-staging.testchimp.io";
+				TESTCHIMP_ENV = production;
+				TESTCHIMP_PROJECT_ID = "f241349a-70f6-48ec-b213-e09ff8520386";
 			};
 			name = Release;
 		};
@@ -336,6 +355,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3A1F2E003EBB7CE1001943C1 /* XCRemoteSwiftPackageReference "testchimp-rum-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/testchimphq/testchimp-rum-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3A1F2E013EBB7CE1001943C1 /* TestChimpRum */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3A1F2E003EBB7CE1001943C1 /* XCRemoteSwiftPackageReference "testchimp-rum-ios" */;
+			productName = TestChimpRum;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2D9BE5662EBB7CE1001943C4 /* Project object */;
 }

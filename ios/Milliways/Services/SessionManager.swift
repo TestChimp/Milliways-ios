@@ -16,13 +16,13 @@ final class SessionManager: ObservableObject {
     }
 
     func signUp(email: String, password: String) async {
-        await authenticate {
+        await authenticate(kind: .signUp) {
             try await APIClient.shared.signUp(email: email, password: password)
         }
     }
 
     func signIn(email: String, password: String) async {
-        await authenticate {
+        await authenticate(kind: .signIn) {
             try await APIClient.shared.signIn(email: email, password: password)
         }
     }
@@ -32,12 +32,23 @@ final class SessionManager: ObservableObject {
         errorMessage = nil
     }
 
-    private func authenticate(_ request: () async throws -> AuthSession) async {
+    private enum AuthKind: String {
+        case signIn = "sign_in"
+        case signUp = "sign_up"
+    }
+
+    private func authenticate(kind: AuthKind, _ request: () async throws -> AuthSession) async {
         isLoading = true
         errorMessage = nil
 
         do {
             session = try await request()
+            if session != nil {
+                MilliwaysRum.emit(
+                    "auth_session_started",
+                    metadata: ["entry.auth_kind": kind.rawValue]
+                )
+            }
         } catch {
             errorMessage = error.localizedDescription
         }

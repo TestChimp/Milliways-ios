@@ -7,7 +7,7 @@ LastRunOnCommit: 06534fa1ca93bc1878e551f6a3136bba727d9cf6
 ## Analyze (summary)
 
 - **Plans:** `plans/stories/order-food.md` (**US-100**), `plans/stories/track-order.md` (**US-101**); scenarios **`plans/scenarios/add-menu-item.md` (#TS-100)** and **`plans/scenarios/submit-order-with-valid-delivery-details.md` (#TS-101)** (both under US-100). No scenario file yet for US-101.
-- **SmartTests root:** `tc-tests/` (iOS Mobilewright). **Environment:** `ai-test-instructions.md` — local Docker backend/Postgres, Simulator + `IOS_APP_PATH`.
+- **SmartTests root:** `ios/tc-tests/` (iOS Mobilewright). **Environment:** `ai-test-instructions.md` — local Docker backend/Postgres, Simulator + `IOS_APP_PATH`.
 - **App reality:** Cart list does not expose per-line quantity steppers; quantity changes happen on **MenuItemDetailView** (`+` / `−` / `Add to Order`). Delivery is a **full-screen** success view (no separate “delivery form” fields).
 
 ## Plan — tests to author
@@ -66,7 +66,7 @@ LastRunOnCommit: 06534fa1ca93bc1878e551f6a3136bba727d9cf6
 ## Checklist
 
 - [x] Branch plan file created / updated
-- [x] SmartTests for #TS-100 and #TS-101 authored in `tc-tests/`
+- [x] SmartTests for #TS-100 and #TS-101 authored in `ios/tc-tests/`
 - [x] Auth seed endpoint and `seededUser` fixture added
 - [x] Local device-backed rerun for `order-flow.spec.js` after fixture update
 - [x] CI workflow expanded beyond smoke: starts local Docker backend, boots Simulator, installs app, and runs `order-flow.spec.js`

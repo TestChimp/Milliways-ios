@@ -2,7 +2,17 @@
 
   <img src="./docs/screenshot.png" alt width="300" align="right" style="margin-left: 3em; margin-bottom: 3em; border: 2px solid #444; border-radius: 12px; padding: 4px;" />
 
-A Swift iOS application inspired by The Restaurant at the End of the Universe. Designed as a testing ground for mobile automation tools and frameworks from [Mobile Next](https://github.com/mobile-next).
+A demo restaurant stack inspired by The Restaurant at the End of the Universe: **iOS** (SwiftUI under `ios/`), **Android** (Kotlin under `android/` when present), and a shared **Node** backend. Designed for mobile automation and [TestChimp](https://testchimp.io) demos.
+
+## Repository layout
+
+| Path | Contents |
+|------|----------|
+| `backend/` | Node demo API and Docker image |
+| `ios/` | Xcode project, app sources, `Makefile`, legacy **`ios/tests/`** (Mobilewright / mobile-use), and **`ios/tc-tests/`** (TestChimp SmartTests / Mobilewright) |
+| `android/` | Android app (Kotlin) and **`android/tests/`** (reserved for future Mobilewright / SmartTests; empty for now) |
+| `plans/` | Markdown test plans and event docs |
+| `scripts/` | Local CI helpers (e.g. iOS Simulator + SmartTests) |
 
 ## Purpose
 
@@ -27,7 +37,7 @@ This application contains intentionally placed bugs for testing purposes.
    ```bash
    docker compose up --build -d
    ```
-3. Open `Milliways.xcodeproj` in Xcode
+3. Open `ios/Milliways.xcodeproj` in Xcode
 4. Build and run on iOS Simulator or real device
 
 The local API is exposed at `http://localhost:3001` and the Postgres database is exposed at `localhost:5432`. The iOS Simulator can reach the API through `localhost`; a physical device needs the Mac's LAN IP instead.
@@ -41,14 +51,19 @@ cd backend
 npm run smoke
 ```
 
-## Building with Make
+## Building iOS with Make
+
+Run these from the `ios/` directory (or pass `-C ios` from the repo root):
 
 ```bash
+cd ios
 make build     # Build for simulator
 make run       # Build, install, and launch on iPhone 17 Pro simulator
 make ipa       # Build unsigned IPA
 make clean     # Clean build artifacts
 ```
+
+From repo root: `make -C ios build`, etc.
 
 ## Community
 

@@ -2,10 +2,10 @@ import { defineConfig, type MobilewrightConfig } from 'mobilewright';
 import dotenv from 'dotenv';
 
 /**
- * SmartTests root: **tc-tests/** (see `.testchimp-tests`). Run Mobilewright from this directory.
+ * SmartTests root: **ios/tc-tests/** (see `.testchimp-tests`). Run Mobilewright from this directory.
  *
  * CI: `.github/workflows/smarttests-ios-simulator.yml` (macOS + local Docker backend + Simulator).
- * Local: `../scripts/smarttests-ios-simulator.sh` or `make build && make boot` then `IOS_APP_PATH=... npm test` in `tc-tests`.
+ * Local: `scripts/smarttests-ios-simulator.sh` from repo root, or `cd ios && make build && make boot` then `IOS_APP_PATH=... npm test` here.
  *
  * Keep `mobilewright` and `@mobilewright/test` on the **same** version. If Playwright complains about
  * duplicate `@playwright/test`, keep `package.json` **overrides** for `@playwright/test` / `playwright`.
@@ -44,7 +44,7 @@ const config: MobilewrightConfig = {
   // how many workers (devices) at the same time?
   workers: process.env.CI ? 2 : 1,
 
-  // Local Simulator: set IOS_APP_PATH to your Debug-iphonesimulator .app (see Makefile in repo root).
+  // Local Simulator: set IOS_APP_PATH to your Debug-iphonesimulator .app (see `ios/Makefile`).
   // Cloud (mobile-use): set MOBILE_USE_API_KEY and use a device .ipa path here instead.
   installApps: process.env.IOS_APP_PATH ?? '[PATH_TO_IPA]',
 
@@ -54,7 +54,7 @@ const config: MobilewrightConfig = {
     [
       '@testchimp/playwright/reporter',
       {
-        // Config + specs live in `tc-tests/` (SmartTests root). Default env is `tests/` which breaks
+        // Config + specs live in `ios/tc-tests/` (SmartTests root). Default env is `tests/` which breaks
         // folderPath relative to the mapped repo folder — set `.` so reports match platform paths.
         testsFolder: '.',
         verbose: Boolean(process.env.TESTCHIMP_REPORTER_VERBOSE),
