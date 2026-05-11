@@ -33,7 +33,8 @@ android {
         buildConfigField("String", "TESTCHIMP_PROJECT_ID", tcProjectId.escapeForBuildConfig())
         buildConfigField("String", "TESTCHIMP_API_KEY", tcApiKey.escapeForBuildConfig())
         buildConfigField("String", "TESTCHIMP_BACKEND_URL", tcBackend.escapeForBuildConfig())
-        buildConfigField("String", "TESTCHIMP_ENV", "\"QA\"")
+        // Match iOS Debug `TESTCHIMP_ENV` (see project.pbxproj); release overrides below.
+        buildConfigField("String", "TESTCHIMP_ENV", "\"staging\"")
     }
 
     buildTypes {

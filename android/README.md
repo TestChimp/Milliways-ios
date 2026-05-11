@@ -52,7 +52,7 @@ TESTCHIMP_API_KEY=your_project_api_key
 
 If `TESTCHIMP_PROJECT_ID` / `TESTCHIMP_API_KEY` are empty, RUM is skipped (Logcat tag **`Milliways`**).
 
-- **Environment:** Debug builds use **`QA`** in `BuildConfig`; Release uses **`production`**. Emulator/device process env **`TESTCHIMP_ENV`** overrides when set.
+- **Environment:** Debug builds use **`staging`** in `BuildConfig` (same as iOS Debug in `project.pbxproj`); Release uses **`production`**. Emulator/device process env **`TESTCHIMP_ENV`** overrides when set.
 - **Ingest URL:** Defaults to **`https://featureservice-staging.testchimp.io`** in `BuildConfig` when `TESTCHIMP_BACKEND_URL` is unset; process env **`TESTCHIMP_BACKEND_URL`** overrides at runtime.
 
 For SmartTests: **`android/tests/`** (`npm ci && npm run test:smoke`); TestChimp markdown plans under **`android/plans/`**. Use **`android/.cursor/mcp.json`** for the project API key when running `testchimp` / Mobilewright reporters (do not commit keys).
