@@ -36,8 +36,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-## Cursor (local MCP / secrets)
-.cursor/mcp.json
+## Cursor (local MCP / secrets — never commit API keys)
+**/.cursor/mcp.json
 
 ## Android
 android/local.properties

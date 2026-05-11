@@ -1,25 +1,51 @@
 #!/usr/bin/env node
 /**
- * Run Mobilewright from `ios/tc-tests/` with TestChimp env merged from repo `.cursor/mcp.json`
- * (same `testchimp` server block as Cursor MCP: API key + backend URL for staging).
+ * Run Mobilewright from a SmartTests root with TestChimp env from a chosen MCP JSON
+ * (`mcpServers.testchimp.env`: TESTCHIMP_API_KEY, optional TESTCHIMP_BACKEND_URL).
  *
- * Usage (from repo root or `ios/tc-tests` via npm scripts):
- *   node scripts/run-mobilewright-with-mcp-env.mjs [args...passed to `npx mobilewright test`...]
+ * Defaults (backward compatible): ios/.cursor/mcp.json + ios/tc-tests + TESTCHIMP_PROJECT_TYPE=ios.
  *
- * Examples:
- *   node scripts/run-mobilewright-with-mcp-env.mjs
- *   node scripts/run-mobilewright-with-mcp-env.mjs smoke.quick.spec.js
- *   node scripts/run-mobilewright-with-mcp-env.mjs order-flow.spec.js --reporter=list
+ * Usage:
+ *   node scripts/run-mobilewright-with-mcp-env.mjs [args...]   # legacy: args → mobilewright
+ *   node scripts/run-mobilewright-with-mcp-env.mjs --mcp-json android/.cursor/mcp.json \
+ *     --tests-root android/tests --project-type android -- smoke.quick.spec.js
  */
 import { existsSync, readFileSync } from 'fs';
 import { spawnSync } from 'child_process';
-import { dirname, join } from 'path';
+import { dirname, isAbsolute, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, '..');
-const tcTestsRoot = join(repoRoot, 'ios', 'tc-tests');
-const mcpPath = join(repoRoot, '.cursor', 'mcp.json');
+
+let mcpPath = join(repoRoot, 'ios', '.cursor', 'mcp.json');
+let testsRoot = join(repoRoot, 'ios', 'tc-tests');
+let projectType = 'ios';
+
+const raw = process.argv.slice(2);
+const passthrough = [];
+for (let i = 0; i < raw.length; i++) {
+  const a = raw[i];
+  if (a === '--mcp-json' && raw[i + 1]) {
+    const p = raw[++i];
+    mcpPath = isAbsolute(p) ? p : resolve(process.cwd(), p);
+    continue;
+  }
+  if (a === '--tests-root' && raw[i + 1]) {
+    const p = raw[++i];
+    testsRoot = isAbsolute(p) ? p : resolve(process.cwd(), p);
+    continue;
+  }
+  if (a === '--project-type' && raw[i + 1]) {
+    projectType = String(raw[++i]).toLowerCase();
+    continue;
+  }
+  if (a === '--') {
+    passthrough.push(...raw.slice(i + 1));
+    break;
+  }
+  passthrough.push(a);
+}
 
 const env = { ...process.env };
 
@@ -34,17 +60,13 @@ if (existsSync(mcpPath)) {
       env.TESTCHIMP_BACKEND_URL = String(te.TESTCHIMP_BACKEND_URL).trim();
     }
   } catch {
-    console.warn('[run-mobilewright-with-mcp-env] Could not parse .cursor/mcp.json; using process env only.');
+    console.warn('[run-mobilewright-with-mcp-env] Could not parse MCP JSON; using process env only.');
   }
 } else {
-  console.warn('[run-mobilewright-with-mcp-env] No .cursor/mcp.json; using process env only (set TESTCHIMP_* in CI).');
+  console.warn(`[run-mobilewright-with-mcp-env] No MCP file at ${mcpPath}; using process env only.`);
 }
 
-env.TESTCHIMP_PROJECT_TYPE = env.TESTCHIMP_PROJECT_TYPE || 'ios';
-// @testchimp/playwright defaults to requiring `mobilewright`, but that package does not export
-// Playwright's `test` — only `@mobilewright/test` does. Their runtime reads
-// TESTCHIMP_MOBILE_TEST_MODULE (see node_modules/@testchimp/playwright/dist/project-type.js).
-// Set here so callers never need to remember it.
+env.TESTCHIMP_PROJECT_TYPE = env.TESTCHIMP_PROJECT_TYPE || projectType;
 env.TESTCHIMP_MOBILE_TEST_MODULE = '@mobilewright/test';
 
 if (!env.TESTCHIMP_BRANCH_NAME) {
@@ -53,11 +75,10 @@ if (!env.TESTCHIMP_BRANCH_NAME) {
   if (b) env.TESTCHIMP_BRANCH_NAME = b;
 }
 
-const passthrough = process.argv.slice(2);
 const mwArgs = ['mobilewright', 'test', ...passthrough];
 
 const r = spawnSync('npx', mwArgs, {
-  cwd: tcTestsRoot,
+  cwd: testsRoot,
   env,
   stdio: 'inherit',
 });

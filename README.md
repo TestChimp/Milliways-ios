@@ -9,9 +9,9 @@ A demo restaurant stack inspired by The Restaurant at the End of the Universe: *
 | Path | Contents |
 |------|----------|
 | `backend/` | Node demo API and Docker image |
-| `ios/` | Xcode project, app sources, `Makefile`, legacy **`ios/tests/`** (Mobilewright / mobile-use), and **`ios/tc-tests/`** (TestChimp SmartTests / Mobilewright) |
-| `android/` | **Kotlin + Compose** app (`:app`), same flows as iOS; **`android/tests/`** reserved for Mobilewright / SmartTests (placeholder only) |
-| `plans/` | Markdown test plans and event docs |
+| `ios/` | Xcode project, app sources, `Makefile`, and **`ios/tc-tests/`** (TestChimp SmartTests / Mobilewright). Plans: **`ios/plans/`**. |
+| `android/` | **Kotlin + Compose** app (`:app`), same flows as iOS; **`android/tests/`** (TestChimp SmartTests / Mobilewright). Plans: **`android/plans/`**. |
+| `plans/` (repo root) | Legacy markdown test plans from an earlier single-folder mapping; **canonical** plans for TestChimp live under **`ios/plans/`** and **`android/plans/`** per platform project. |
 | `scripts/` | Local CI helpers (e.g. iOS Simulator + SmartTests) |
 
 ## Purpose

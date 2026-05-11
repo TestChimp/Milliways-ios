@@ -42,7 +42,7 @@ jobs:
           path: ios/build
 
       - name: Run tests using mobilewright
-        working-directory: ios/tests
+        working-directory: ios/tc-tests
         run: |
           # some of the tests are expected to fail, so we're adding || true
           npm ci --ignore-scripts
@@ -53,7 +53,7 @@ jobs:
         if: always()
         with:
           name: mobilewright-report
-          path: ios/tests/mobilewright-report
+          path: ios/tc-tests/mobilewright-report
 
       - uses: aws-actions/configure-aws-credentials@v5
         if: always()
@@ -65,7 +65,7 @@ jobs:
         if: always()
         run: |
           GITSHA=$( git rev-parse HEAD )
-          aws s3 cp --quiet --recursive --acl public-read ios/tests/mobilewright-report s3://mobilewright-samples/milliways/runs/$GITSHA
+          aws s3 cp --quiet --recursive --acl public-read ios/tc-tests/mobilewright-report s3://mobilewright-samples/milliways/runs/$GITSHA
           echo "→ Report uploaded to https://mobilewright-samples.s3.amazonaws.com/milliways/runs/$GITSHA/index.html"
           echo "### 📊 Test Report" >> $GITHUB_STEP_SUMMARY
           echo "[View Mobilewright Report](https://mobilewright-samples.s3.amazonaws.com/milliways/runs/$GITSHA/index.html)" >> $GITHUB_STEP_SUMMARY

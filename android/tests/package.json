@@ -1,0 +1,23 @@
+{
+  "name": "milliways-android-smarttests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node ../../scripts/run-mobilewright-with-mcp-env.mjs --mcp-json ../.cursor/mcp.json --tests-root . --project-type android",
+    "test:smoke": "node ../../scripts/run-mobilewright-with-mcp-env.mjs --mcp-json ../.cursor/mcp.json --tests-root . --project-type android -- smoke.quick.spec.js",
+    "doctor": "npx mobilewright doctor"
+  },
+  "dependencies": {
+    "@mobilewright/test": "^0.0.33",
+    "@testchimp/playwright": "0.1.29",
+    "dotenv": "^16.4.5",
+    "mobilewright": "^0.0.33"
+  },
+  "devDependencies": {
+    "@testchimp/cli": "^0.1.4"
+  },
+  "overrides": {
+    "@playwright/test": "1.59.1",
+    "playwright": "1.59.1"
+  }
+}

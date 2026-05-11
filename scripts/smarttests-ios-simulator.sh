@@ -37,6 +37,6 @@ fi
 echo "==> Installing app on booted Simulator"
 xcrun simctl install booted "$IOS_APP_PATH"
 
-echo "==> Running SmartTests order flow from ios/tc-tests (TestChimp env from .cursor/mcp.json when present)"
+echo "==> Running SmartTests order flow from ios/tc-tests (TestChimp env from ios/.cursor/mcp.json when present)"
 cd "$ROOT/ios/tc-tests"
-node "$ROOT/scripts/run-mobilewright-with-mcp-env.mjs" order-flow.spec.js
+node "$ROOT/scripts/run-mobilewright-with-mcp-env.mjs" --mcp-json "$ROOT/ios/.cursor/mcp.json" --tests-root "$ROOT/ios/tc-tests" --project-type ios -- order-flow.spec.js

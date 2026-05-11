@@ -577,11 +577,11 @@ private fun MenuItemDetailContent(item: MenuItem, onAdd: (Int) -> Unit, onDismis
                     .padding(horizontal = 4.dp),
             ) {
                 TextButton(onClick = { if (quantity > 1) quantity-- }, enabled = quantity > 1) {
-                    Icon(Icons.Default.Remove, contentDescription = null)
+                    Icon(Icons.Default.Remove, contentDescription = "−")
                 }
                 Text("$quantity", modifier = Modifier.padding(horizontal = 8.dp), style = MaterialTheme.typography.titleMedium)
                 TextButton(onClick = { quantity++ }) {
-                    Icon(Icons.Default.Add, contentDescription = null)
+                    Icon(Icons.Default.Add, contentDescription = "+")
                 }
             }
             Button(
