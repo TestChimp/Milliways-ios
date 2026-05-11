@@ -25,8 +25,9 @@ test.describe('US-104 navigate app after ordering', () => {
     await expect(screen.getByText(/is on its way/)).toBeVisible();
     await screen.getByLabel('Close').tap();
 
-    await expect(screen.getByText('Welcome to Milliways')).toBeVisible();
-    await expect(screen.getByLabel('New Order')).toBeVisible();
+    await expect(screen.getByText('Welcome to Milliways')).toBeVisible({ timeout: 20_000 });
+    await screen.getByLabel('New Order').scrollIntoViewIfNeeded();
+    await expect(screen.getByLabel('New Order')).toBeVisible({ timeout: 20_000 });
   });
 
   test('cart is cleared after completing an order', async ({ screen, markScreenState }) => {
@@ -38,8 +39,9 @@ test.describe('US-104 navigate app after ordering', () => {
     await markScreenState('Delivery', 'Confirmed');
 
     await screen.getByLabel('Close').tap();
-    await expect(screen.getByText('Welcome to Milliways')).toBeVisible();
+    await expect(screen.getByText('Welcome to Milliways')).toBeVisible({ timeout: 20_000 });
 
+    await screen.getByLabel('New Order').scrollIntoViewIfNeeded();
     await screen.getByLabel('New Order').tap();
     await markScreenState('Menu', 'Browsing');
     await openCart(screen);

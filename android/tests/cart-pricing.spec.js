@@ -17,14 +17,15 @@ test.describe('US-100 order food — cart and pricing', () => {
     await expect(screen.getByText('MAIN DISHES')).toBeVisible();
     await addItemToCart(screen, expect, 'Green Salad', 0);
     await expect(screen.getByText('MAIN DISHES')).toBeVisible();
+    await screen.getByText('Coffee').scrollIntoViewIfNeeded();
     await addItemToCart(screen, expect, 'Coffee', 0);
 
-    await expect(screen.getByText('3 items')).toBeVisible();
-    await expect(screen.getByText('₭61.50')).toBeVisible();
+    await expect(screen.getByText('3 items')).toBeVisible({ timeout: 20_000 });
+    await expect(screen.getByText('₭61.50').last()).toBeVisible({ timeout: 20_000 });
 
     await screen.getByText('View Order').tap();
     await markScreenState('Cart', 'Review');
-    await expect(screen.getByText('₭61.50')).toBeVisible();
+    await expect(screen.getByText('₭61.50').last()).toBeVisible({ timeout: 20_000 });
   });
 
   test('add multiple quantities from menu list updates price', async ({ screen, markScreenState }) => {

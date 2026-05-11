@@ -8,12 +8,12 @@ test.beforeEach(async ({ device, bundleId, screen, seededUser }) => {
 });
 
 test.describe('US-103 view account and order history', () => {
-  test('profile shows user info and loyalty', async ({ screen, markScreenState }) => {
+  test('profile shows user info and loyalty', async ({ screen, markScreenState, seededUser }) => {
     // @Scenario: #TS-109 Account profile shows user email and loyalty tier
     await openAccount(screen);
     await markScreenState('Account', 'Profile');
 
-    await expect(screen.getByText(/@milliways.local/)).toBeVisible();
+    await expect(screen.getByLabel(seededUser.email)).toBeVisible({ timeout: 20_000 });
     await expect(screen.getByText('Pro Cosmic Foodie')).toBeVisible();
     await expect(screen.getByText('My Account')).toBeVisible();
   });

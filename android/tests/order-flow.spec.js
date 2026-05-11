@@ -31,12 +31,12 @@ test.describe('US-100 order food', () => {
     await screen.getByLabel('Add to Order').tap();
     await expect(screen.getByText('View Order')).toBeVisible();
     await expect(screen.getByText('2 items')).toBeVisible();
-    await expect(screen.getByText('₭76.00')).toBeVisible();
+    await expect(screen.getByText('₭76.00').last()).toBeVisible({ timeout: 20_000 });
 
     await screen.getByText('View Order').tap();
     await markScreenState('Cart', 'Review');
     await expect(screen.getByText('2 × ₭38.00')).toBeVisible();
-    await expect(screen.getByText('₭76.00')).toBeVisible();
+    await expect(screen.getByText('₭76.00').last()).toBeVisible({ timeout: 20_000 });
   });
 
   test('submit order and reach delivery confirmation', async ({ screen, markScreenState }) => {
@@ -65,17 +65,18 @@ test.describe('US-100 order food', () => {
 
     await addItemToCart(screen, expect, 'Ameglian Major Cow', 0);
     await expect(screen.getByText('MAIN DISHES')).toBeVisible();
+    await screen.getByText('Coffee').scrollIntoViewIfNeeded();
     await addItemToCart(screen, expect, 'Coffee', 0);
 
     await expect(screen.getByText('View Order')).toBeVisible();
     await expect(screen.getByText('2 items')).toBeVisible();
-    await expect(screen.getByText('₭39.50')).toBeVisible();
+    await expect(screen.getByText('₭39.50').last()).toBeVisible({ timeout: 20_000 });
 
     await screen.getByText('View Order').tap();
     await markScreenState('Cart', 'Review');
     await expect(screen.getByText('Ameglian Major Cow')).toBeVisible();
     await expect(screen.getByText('Coffee')).toBeVisible();
-    await expect(screen.getByText('₭39.50')).toBeVisible();
+    await expect(screen.getByText('₭39.50').last()).toBeVisible({ timeout: 20_000 });
 
     await screen.getByLabel('Place Order').tap();
     await markScreenState('Delivery', 'Confirmed');

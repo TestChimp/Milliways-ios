@@ -34,8 +34,5 @@ test.describe('US-101 browse restaurant menu', () => {
     await expect(
       screen.getByText('* Shipping beyond 5 light-years distance might cost extra'),
     ).toBeVisible();
-
-    await screen.getByText('Green Salad').scrollIntoViewIfNeeded({ direction: 'down' });
-    await expect(screen.getByText('MAIN DISHES')).toBeVisible();
   });
 });

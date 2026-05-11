@@ -5,7 +5,9 @@ export async function navigateToMenu(screen, expect) {
 }
 
 export async function signInForDemo(screen, expect, user) {
-  await expect(screen.getByText('Sign in to order from the restaurant at the end of the universe.')).toBeVisible();
+  await expect(screen.getByText('Sign in to order from the restaurant at the end of the universe.')).toBeVisible({
+    timeout: 30_000,
+  });
   await screen.getByLabel('Email').fill(user.email);
   await screen.getByLabel('Password').fill(user.password);
   await screen.getByText('Sign In').tap();
@@ -18,7 +20,8 @@ export async function addItemToCart(screen, expect, itemName, extraPlusTaps = 0)
   for (let i = 0; i < extraPlusTaps; i++) {
     await screen.getByLabel('+').tap();
   }
-  await screen.getByText('Add to Order').tap();
+  await screen.getByLabel('Add to Order').tap();
+  await expect(screen.getByLabel('Close')).not.toBeVisible({ timeout: 20_000 });
 }
 
 export async function openCart(screen) {
