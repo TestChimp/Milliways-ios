@@ -34,7 +34,7 @@ Sign in / sign up, welcome hero, menu with sections, item detail with quantity, 
 
 ## TrueCoverage (TestChimp RUM)
 
-The app includes **[testchimp-rum-android](https://github.com/testchimphq/testchimp-rum-android)** (Maven id **`io.testchimp:rum-android:0.1.5`** via **`mavenLocal()`** after publishing that tag from the rum repo, or **`com.github.testchimphq:testchimp-rum-android:0.1.5`** on [JitPack](https://jitpack.io/#testchimphq/testchimp-rum-android) once the tag build is green), aligned with iOS:
+The app includes **[testchimp-rum-android](https://github.com/testchimphq/testchimp-rum-android)** on [JitPack](https://jitpack.io/#testchimphq/testchimp-rum-android) as **`com.github.testchimphq:testchimp-rum-android:0.1.5`**, aligned with iOS:
 
 - **Init:** `MilliwaysApplication` → `MilliwaysRum.configureIfNeeded` (same journey events: `auth_session_started`, `menu_loaded`, `order_submitted_success`). Every emit includes metadata **`platform`** = **`android`** (iOS uses **`ios`**; web should use **`web`**).
 - **Automation URLs:** `MainActivity` uses **`launchMode="singleTop"`**, a **`testchimp-rum`** / **`truecoverage`** / **`/v1`** intent filter, and **`TestChimpRum.handleAutomationIntent`** in **`onCreate`** / **`onNewIntent`** so Mobilewright + `installTestChimp` can set CI context (`TESTCHIMP_PROJECT_TYPE=android` on the runner).
@@ -56,3 +56,17 @@ If `TESTCHIMP_PROJECT_ID` / `TESTCHIMP_API_KEY` are empty, RUM is skipped (Logca
 - **Ingest URL:** Defaults to **`https://featureservice-staging.testchimp.io`** in `BuildConfig` when `TESTCHIMP_BACKEND_URL` is unset; process env **`TESTCHIMP_BACKEND_URL`** overrides at runtime.
 
 For SmartTests: **`android/tests/`** (`npm ci && npm run test:smoke`); TestChimp markdown plans under **`android/plans/`**. Use **`android/.cursor/mcp.json`** for the project API key when running `testchimp` / Mobilewright reporters (do not commit keys).
+
+### TrueCoverage troubleshooting (logcat + low emit counts)
+
+- **Plain `npm test` does not capture device logcat**; use:
+
+  ```bash
+  cd android/tests && chmod +x run-with-logcat.sh   # once
+  npm run test:with-logcat
+  # or: ./run-with-logcat.sh smoke.quick.spec.js
+  ```
+
+  Output: **`android/tests/test-results/logcat-ci-debug-*.txt`**. Search for `TrueCoverage`, `RUM emit without`, `CI context`.
+
+- **Very few RUM events** often means: **RUM skipped** (missing `TESTCHIMP_PROJECT_ID` / `TESTCHIMP_API_KEY` in `gradle.properties`), **tests never hit** code paths that call `MilliwaysRum.emit` (smoke may not load menu / submit order), or **SDK/network limits**.
