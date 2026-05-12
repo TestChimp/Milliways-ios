@@ -1,6 +1,7 @@
 package com.mobilenext.milliways
 
 import android.content.Context
+import android.os.Process
 import android.util.Log
 import io.testchimp.rum.TestChimpEmitInput
 import io.testchimp.rum.TestChimpRum
@@ -55,10 +56,14 @@ object MilliwaysRum {
     }
 
     fun emit(title: String, metadata: Map<String, String> = emptyMap()) {
-        if (!TestChimpRum.hasCiTestInfo()) {
+        val pid = Process.myPid()
+        val hasCi = TestChimpRum.hasCiTestInfo()
+        if (hasCi) {
+            Log.i(TAG, "RUM emit title=$title ci_test_info=attached pid=$pid (ingest header will include CI)")
+        } else {
             Log.w(
                 TAG,
-                "RUM emit without active TrueCoverage ci_test_info (event will not carry CI header): title=$title",
+                "RUM emit title=$title ci_test_info=missing pid=$pid (no CI header — compare MilliwaysTC SET/CLEAR/FLUSH around this time; new pid often means cold start before automation openUrl)",
             )
         }
         val merged = metadata.toMutableMap().apply { put("platform", "android") }

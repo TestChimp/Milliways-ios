@@ -67,7 +67,7 @@ For SmartTests: **`android/tests/`** (`npm ci && npm run test:smoke`); TestChimp
   # or: ./run-with-logcat.sh smoke.quick.spec.js
   ```
 
-  Output: **`android/tests/test-results/logcat-ci-debug-*.txt`**. Search for `TrueCoverage`, `RUM emit without`, `CI context`.
+  Output: **`android/tests/device-logs/logcat-ci-debug-*.txt`** (outside `test-results/` so Playwright does not delete it). Search for `TrueCoverage`, **`ci_test_info=`** (attached vs missing), `CI context`, `FLUSH`. **`pid=`** on each RUM line helps spot a **new process** (cold start / reinstall) where automation `SET` has not run yet — expect **`ci_test_info=missing`** until the next `MilliwaysTC` SET for that pid.
 
 - **Very few RUM events** often means: **RUM skipped** (missing `TESTCHIMP_PROJECT_ID` / `TESTCHIMP_API_KEY` in `gradle.properties`), **tests never hit** code paths that call `MilliwaysRum.emit` (smoke may not load menu / submit order), **SDK/network limits**, or **you checked the DB before the batch flushed** (events are buffered; SDK default timer is **10s** plus **flush on app background**). The Android SDK **does not log HTTP failures** for `/rum/events`—if the URL or key is wrong, emits disappear silently; confirm **`TESTCHIMP_BACKEND_URL`** and filter queries on **`environment`** (Debug defaults to **`staging`**). Mobilewright **`@testchimp/playwright` ≥ 0.1.37** issues **`v1/flush`** at end of each test so short runs still upload.
 

@@ -5,7 +5,7 @@
 #   Milliways     — RUM skipped, emit-without-CI warnings
 #   MilliwaysTC   — automation SET/CLEAR from MainActivity
 #
-# Output: test-results/logcat-ci-debug-<timestamp>.txt (same folder as Playwright artifacts).
+# Output: device-logs/logcat-ci-debug-<timestamp>.txt (NOT under test-results/ — Playwright clears that folder).
 #
 # Usage (from repo root or this directory):
 #   cd android/tests && ./run-with-logcat.sh
@@ -28,8 +28,8 @@ if ! adb devices | grep -E '^\S+\s+device$' -q; then
   exit 1
 fi
 
-mkdir -p "$TESTS_DIR/test-results"
-LOGFILE="$TESTS_DIR/test-results/logcat-ci-debug-$(date +%Y%m%d-%H%M%S).txt"
+mkdir -p "$TESTS_DIR/device-logs"
+LOGFILE="$TESTS_DIR/device-logs/logcat-ci-debug-$(date +%Y%m%d-%H%M%S).txt"
 
 if [[ "${CLEAR_LOGCAT:-1}" != "0" ]]; then
   adb logcat -c 2>/dev/null || true
@@ -45,7 +45,7 @@ cleanup() {
   wait "$LOGPID" 2>/dev/null || true
   echo ""
   echo "==> Logcat saved: $LOGFILE"
-  echo "    grep -E 'TrueCoverage|RUM emit|CI context' \"$LOGFILE\""
+  echo "    grep -E 'TrueCoverage|ci_test_info=|CI context|FLUSH' \"$LOGFILE\""
   exit "$st"
 }
 trap cleanup EXIT INT TERM
