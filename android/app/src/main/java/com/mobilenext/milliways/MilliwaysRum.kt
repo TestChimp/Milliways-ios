@@ -36,6 +36,8 @@ object MilliwaysRum {
                 options = TestChimpRumConfig.Options(
                     maxEventsPerSession = 100,
                     maxRepeatsPerEvent = 12,
+                    // SDK default is 10s; shorter interval makes manual / DB checks less confusing.
+                    eventSendIntervalMillis = 5_000L,
                     testchimpEndpoint = endpoint,
                 ),
             ),

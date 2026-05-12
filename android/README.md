@@ -36,8 +36,8 @@ Sign in / sign up, welcome hero, menu with sections, item detail with quantity, 
 
 The app includes **[testchimp-rum-android](https://github.com/testchimphq/testchimp-rum-android)** on [JitPack](https://jitpack.io/#testchimphq/testchimp-rum-android) as **`com.github.testchimphq:testchimp-rum-android:0.1.6`**, aligned with iOS:
 
-- **Init:** `MilliwaysApplication` → `MilliwaysRum.configureIfNeeded` (same journey events: `auth_session_started`, `menu_loaded`, `order_submitted_success`). Every emit includes metadata **`platform`** = **`android`** (iOS uses **`ios`**; web should use **`web`**).
-- **Automation URLs:** `MainActivity` uses **`launchMode="singleTop"`**, a **`testchimp-rum`** / **`truecoverage`** / **`/v1`** intent filter, and **`TestChimpRum.handleAutomationIntent`** in **`onCreate`** / **`onNewIntent`** so Mobilewright + `installTestChimp` can set CI context (`TESTCHIMP_PROJECT_TYPE=android` on the runner).
+- **Init:** `MilliwaysApplication` → `MilliwaysRum.configureIfNeeded` (same journey events: `auth_session_started`, `menu_loaded`, `order_submitted_success`). Every emit includes metadata **`platform`** = **`android`** (iOS uses **`ios`**; web should use **`web`**). When the app goes to the background, **`TestChimpRum.flush()`** runs so batched events are not stuck in memory if the OS kills the process before the next timer flush.
+- **Automation URLs:** `MainActivity` uses **`launchMode="singleTop"`**, a **`testchimp-rum`** / **`truecoverage`** / **`/v1`** intent filter, and **`TestChimpRum.handleAutomationUri`** in **`onCreate`** / **`onNewIntent`** / **`onResume`** so Mobilewright + `installTestChimp` can set CI context (`TESTCHIMP_PROJECT_TYPE=android` on the runner).
 
 ### Credentials and endpoints (local dev)
 
@@ -69,6 +69,6 @@ For SmartTests: **`android/tests/`** (`npm ci && npm run test:smoke`); TestChimp
 
   Output: **`android/tests/test-results/logcat-ci-debug-*.txt`**. Search for `TrueCoverage`, `RUM emit without`, `CI context`.
 
-- **Very few RUM events** often means: **RUM skipped** (missing `TESTCHIMP_PROJECT_ID` / `TESTCHIMP_API_KEY` in `gradle.properties`), **tests never hit** code paths that call `MilliwaysRum.emit` (smoke may not load menu / submit order), or **SDK/network limits**.
+- **Very few RUM events** often means: **RUM skipped** (missing `TESTCHIMP_PROJECT_ID` / `TESTCHIMP_API_KEY` in `gradle.properties`), **tests never hit** code paths that call `MilliwaysRum.emit` (smoke may not load menu / submit order), **SDK/network limits**, or **you checked the DB before the batch flushed** (events are buffered; this demo uses a **5s** timer plus **flush on app background**). The Android SDK **does not log HTTP failures** for `/rum/events`—if the URL or key is wrong, emits disappear silently; confirm **`TESTCHIMP_BACKEND_URL`** and filter queries on **`environment`** (Debug defaults to **`staging`**).
 
 - **Missing `ci_test_info` on some emits** (TrueCoverage): root causes are (1) **time between `launchApp` and `set`** where the app already emitted, (2) **next test’s `clear`** before a late coroutine emit, (3) **`/rum/session/start`** often has no CI (session begins before automation `set`). Mitigations ship in **`@testchimp/playwright`** (extra `set` bursts, post-set settle, `afterEach` re-set) and **rum-android ≥ 0.1.6** (`set` URI applied on the **caller thread** so CI is in memory when `openUrl` returns). Tune **`TESTCHIMP_RUM_AUTOMATION_POST_SET_SETTLE_MS`** (default 100 ms, 0–500) if the device is slow.
