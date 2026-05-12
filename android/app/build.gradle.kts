@@ -61,8 +61,9 @@ android {
 }
 
 dependencies {
-    // JitPack tag 0.1.4: ci_test_info snapshot at emit() + emit-path hardening.
-    implementation("com.github.testchimphq:testchimp-rum-android:0.1.4")
+    // Same AAR as JitPack `com.github.testchimphq:testchimp-rum-android:0.1.5` (use that once JitPack has built the tag).
+    // Until then, from testchimp-rum-android: `./gradlew :testchimp-rum:publishReleasePublicationToMavenLocal`
+    implementation("io.testchimp:rum-android:0.1.5")
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

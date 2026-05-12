@@ -55,6 +55,12 @@ object MilliwaysRum {
     }
 
     fun emit(title: String, metadata: Map<String, String> = emptyMap()) {
+        if (!TestChimpRum.hasCiTestInfo()) {
+            Log.w(
+                TAG,
+                "RUM emit without active TrueCoverage ci_test_info (event will not carry CI header): title=$title",
+            )
+        }
         val merged = metadata.toMutableMap().apply { put("platform", "android") }
         TestChimpRum.emit(
             TestChimpEmitInput(
