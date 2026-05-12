@@ -61,9 +61,8 @@ android {
 }
 
 dependencies {
-    // Same AAR as JitPack `com.github.testchimphq:testchimp-rum-android:0.1.5` (use that once JitPack has built the tag).
-    // Until then, from testchimp-rum-android: `./gradlew :testchimp-rum:publishReleasePublicationToMavenLocal`
-    implementation("io.testchimp:rum-android:0.1.5")
+    // JitPack: https://jitpack.io/#testchimphq/testchimp-rum-android/0.1.6 (TrueCoverage set applied on caller thread).
+    implementation("com.github.testchimphq:testchimp-rum-android:0.1.6")
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
