@@ -85,14 +85,6 @@ enum MilliwaysRum {
         var merged = metadata
         merged["platform"] = "ios"
         let meta = Dictionary(uniqueKeysWithValues: merged.map { ($0.key, $0.value as Any) })
-        #if DEBUG
-        MilliwaysRumDiagnostics.recordEmit(title: title)
-        let d = MilliwaysRumDiagnostics.snapshotForLog()
-        let metaKeys = merged.keys.sorted().joined(separator: ",")
-        rumLog.info(
-            "RUM emit title=\(title, privacy: .public) metaKeys=[\(metaKeys, privacy: .public)] trueCoverageState=\(d.automation, privacy: .public) emitCallCount=\(d.emitCount, privacy: .public) (ci_test_info on wire only if state shows set_ok before emit; filter Console: MilliwaysTC + MilliwaysRUM)"
-        )
-        #endif
         TestChimpRum.emit(TestChimpEmitInput(title: title, metadata: meta))
     }
 

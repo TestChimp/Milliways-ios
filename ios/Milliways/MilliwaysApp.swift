@@ -21,7 +21,7 @@ struct MilliwaysApp: App {
         WindowGroup {
             ContentView()
                 .onOpenURL { url in
-                    _ = MilliwaysTrueCoverageOpenURL.handle(url, source: "SwiftUI.onOpenURL")
+                    _ = MilliwaysTrueCoverageOpenURL.handle(url)
                 }
                 // RUM batches events; flush before suspend/relaunch so SmartTest runs still upload telemetry.
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
