@@ -82,11 +82,11 @@ Deferred. When enabled, use macOS for iOS Simulator + `tests/` as cwd; pass `TES
 
 ### Q: Reporter or API returns 401
 
-**A:** Use `npm run test:ios` from `tests/` or `./scripts/run-smarttests.sh ios`. Confirm: `Reporter env: TESTCHIMP_BACKEND_URL=https://featureservice-staging.testchimp.io TESTCHIMP_API_KEY=set`. Do **not** rely on empty `setup/global.setup.spec.js` (removed from config — it was Playwright-only noise in staging). If mobile specs still do not appear, sync the mapped **`tests/`** folder in TestChimp and check reporter logs for `testFound=true` on `menu.spec.js` / `navigation.spec.js`.
+**A:** Use `npm run test:ios` from `tests/` or `./scripts/run-smarttests.sh ios`. Confirm: `Reporter env: TESTCHIMP_BACKEND_URL=https://featureservice-staging.testchimp.io TESTCHIMP_API_KEY=set`. Reporter does **not** use `TESTCHIMP_PROJECT_ID`. If runs ingest but `testFound=false`, sync the mapped **`tests/`** folder in TestChimp (Git integration).
 
 ### Q: Tests cannot find the app bundle or APK
 
-**A:** Build iOS (`make build`) or Android (`./gradlew :app:assembleDebug`), or set `IOS_APP_PATH` / `ANDROID_APK_PATH`. Defaults are resolved in `tests/mobilewright.config.ts` from repo root.
+**A:** Build iOS (`make build`) or Android (`./gradlew :app:assembleDebug`), or set `IOS_APP_PATH` / `ANDROID_APK_PATH`. **mobilewright 0.0.37+** (iOS simulator): `installApps` must be a **`.zip`** of the `.app` (see `run-smarttests.sh` — it zips after build). Android still uses `.apk`.
 
 ### Q: Seed user fails
 

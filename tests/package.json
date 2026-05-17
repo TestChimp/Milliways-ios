@@ -10,10 +10,10 @@
     "doctor": "npx mobilewright doctor"
   },
   "dependencies": {
-    "@mobilewright/test": "^0.0.35",
-    "@testchimp/playwright": "^0.1.41",
+    "@mobilewright/test": "^0.0.37",
+    "@testchimp/playwright": "0.2.0",
     "dotenv": "^16.4.5",
-    "mobilewright": "^0.0.35"
+    "mobilewright": "^0.0.37"
   },
   "devDependencies": {
     "@testchimp/cli": "^0.1.6"

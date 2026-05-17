@@ -43,8 +43,14 @@ if [[ "$PLATFORM" == "ios" ]]; then
   echo "==> Building iOS app ($DEVICE_NAME)"
   make -C "$ROOT/ios" build
   make -C "$ROOT/ios" boot
-  export IOS_APP_PATH="$ROOT/ios/build/Build/Products/Debug-iphonesimulator/Milliways.app"
-  xcrun simctl install booted "$IOS_APP_PATH"
+  IOS_PRODUCTS="$ROOT/ios/build/Build/Products/Debug-iphonesimulator"
+  IOS_APP="$IOS_PRODUCTS/Milliways.app"
+  IOS_ZIP="$IOS_PRODUCTS/Milliways.zip"
+  if [[ ! -f "$IOS_ZIP" ]] || [[ "$IOS_APP" -nt "$IOS_ZIP" ]]; then
+    (cd "$IOS_PRODUCTS" && zip -qr Milliways.zip Milliways.app)
+  fi
+  export IOS_APP_PATH="$IOS_ZIP"
+  xcrun simctl install booted "$IOS_APP"
 elif [[ "$PLATFORM" == "android" ]]; then
   echo "==> Building Android debug APK"
   (cd "$ROOT/android" && ./gradlew :app:assembleDebug)

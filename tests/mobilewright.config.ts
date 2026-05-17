@@ -5,9 +5,10 @@ import { fileURLToPath } from 'url';
 
 const testsRoot = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testsRoot, '..');
+// mobilewright >= 0.0.37: iOS simulator installApps expects a .zip of the .app bundle.
 const defaultIosApp =
   process.env.IOS_APP_PATH ??
-  join(repoRoot, 'ios/build/Build/Products/Debug-iphonesimulator/Milliways.app');
+  join(repoRoot, 'ios/build/Build/Products/Debug-iphonesimulator/Milliways.zip');
 const defaultApk =
   process.env.ANDROID_APK_PATH ??
   join(repoRoot, 'android/app/build/outputs/apk/debug/app-debug.apk');
