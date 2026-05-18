@@ -89,6 +89,10 @@ Deferred. When enabled, use macOS for iOS Simulator + `tests/` as cwd; pass `TES
 
 **A:** Build iOS (`make build`) or Android (`./gradlew :app:assembleDebug`), or set `IOS_APP_PATH` / `ANDROID_APK_PATH`. **mobilewright 0.0.37+** (iOS simulator): `installApps` must be a **`.zip`** of the `.app` (see `run-smarttests.sh` — it zips after build). Android still uses `.apk`.
 
+### Q: No TrueCoverage / RUM emits on Android (iOS works)
+
+**A:** The debug APK at `android/app/build/outputs/apk/debug/app-debug.apk` is often **stale**. Mobilewright installs whatever is on disk; an APK built **before** `testchimp-rum-android` was added contains **no RUM SDK** (no `menu_loaded` / `auth_session_started`, automation `SET` is a no-op). Rebuild: `cd android && ./gradlew :app:assembleDebug`, or `npm run test:android` from `tests/` (runs `build:android` first). Prefer `./scripts/run-smarttests.sh android` from repo root (builds APK + backend). After rebuild, logcat should show `am start … testchimp-rum://truecoverage/v1/set?p=…` per test.
+
 ### Q: RUM events missing `ci_test_info` on mobile
 
 **A:** Use `@testchimp/playwright` ≥ **0.2.3**, `installTestChimp` with `uiFixture: 'screen'`, and `use.platform: 'ios'` or `'android'` on the Mobilewright UI project. Run with `--project=ios` or `--project=android`. Expect `device.openUrl` to `testchimp-rum://truecoverage/v1/set?p=...` once per test at device fixture start (plus trailing set+flush in `afterEach`). Avoid **0.2.0–0.2.2** on mobile (device SET could be skipped). Import `test` from `mobile/fixtures/index.js`, not only `@testchimp/playwright/runtime`.

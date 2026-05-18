@@ -4,8 +4,9 @@
   "type": "module",
   "scripts": {
     "test": "node ../scripts/run-mobilewright-with-mcp-env.mjs",
-    "test:ios": "node ../scripts/run-mobilewright-with-mcp-env.mjs -- mobile/e2e/common -c mobilewright.config.ts --project=ios",
-    "test:android": "node ../scripts/run-mobilewright-with-mcp-env.mjs -- mobile/e2e/common -c mobilewright.config.ts --project=android",
+    "build:android": "cd ../android && ./gradlew :app:assembleDebug",
+    "test:ios": "node ../scripts/run-mobilewright-with-mcp-env.mjs -- -c mobilewright.config.ts --project=ios",
+    "test:android": "npm run build:android && node ../scripts/run-mobilewright-with-mcp-env.mjs -- -c mobilewright.config.ts --project=android",
     "test:smoke": "node ../scripts/run-mobilewright-with-mcp-env.mjs -- mobile/e2e/common/menu.spec.js -c mobilewright.config.ts --project=ios",
     "doctor": "npx mobilewright doctor"
   },

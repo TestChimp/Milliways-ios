@@ -61,8 +61,8 @@ android {
 }
 
 dependencies {
-    // JitPack: https://jitpack.io/#testchimphq/testchimp-rum-android/0.1.7 (TrueCoverage set on caller thread; v1/flush).
-    implementation("com.github.testchimphq:testchimp-rum-android:0.1.7")
+    // JitPack: https://jitpack.io/#testchimphq/testchimp-rum-android/0.1.8 (TrueCoverage set on caller thread; v1/flush).
+    implementation("com.github.testchimphq:testchimp-rum-android:0.1.8")
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
