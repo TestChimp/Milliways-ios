@@ -3,7 +3,8 @@ type: scenario
 id: TS-113
 title: Empty cart checkout behavior
 story: US-105
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites
