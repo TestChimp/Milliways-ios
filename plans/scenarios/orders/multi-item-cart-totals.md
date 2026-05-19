@@ -3,7 +3,8 @@ type: scenario
 id: TS-102
 title: Multi-item cart totals are accurate
 story: US-100
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites
