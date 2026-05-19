@@ -3,7 +3,8 @@ type: scenario
 id: TS-109
 title: Account profile shows user email and loyalty tier
 story: US-103
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites
