@@ -2,7 +2,8 @@
 type: story
 id: US-103
 title: View account and order history
-status: active
+created_date: 2026-05-19
+priority: high
 ---
 
 ## Summary

@@ -2,7 +2,8 @@
 type: story
 id: US-102
 title: Apply promotional coupons
-status: active
+created_date: 2026-05-19
+priority: low
 ---
 
 ## Summary

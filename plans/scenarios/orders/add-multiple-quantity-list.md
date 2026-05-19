@@ -3,7 +3,8 @@ type: scenario
 id: TS-103
 title: Add multiple quantities from menu list updates price
 story: US-100
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites

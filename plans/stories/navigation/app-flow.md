@@ -2,7 +2,8 @@
 type: story
 id: US-104
 title: Navigate app after ordering
-status: active
+created_date: 2026-05-19
+priority: high
 ---
 
 ## Summary

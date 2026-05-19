@@ -3,7 +3,8 @@ type: scenario
 id: TS-110
 title: Past orders sum matches displayed total spent
 story: US-103
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites

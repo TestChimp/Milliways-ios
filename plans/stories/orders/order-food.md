@@ -2,7 +2,8 @@
 type: story
 id: US-100
 title: Place and track food orders
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Summary

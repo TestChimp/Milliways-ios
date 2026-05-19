@@ -3,7 +3,8 @@ type: scenario
 id: TS-114
 title: Footer uses singular item label for quantity of one
 story: US-105
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites

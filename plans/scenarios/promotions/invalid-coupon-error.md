@@ -3,7 +3,8 @@ type: scenario
 id: TS-108
 title: Invalid coupon code shows error message
 story: US-102
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites
