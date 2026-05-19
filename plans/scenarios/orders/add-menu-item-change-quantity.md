@@ -3,7 +3,8 @@ type: scenario
 id: TS-100
 title: Add menu item and change quantity before checkout
 story: US-100
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites
