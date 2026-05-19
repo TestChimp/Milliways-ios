@@ -116,7 +116,18 @@ struct OrderView: View {
                                 .textInputAutocapitalization(.characters)
                                 .accessibilityLabel("Coupon code")
                             Button("Apply") {
-                                if orderManager.applyCoupon(couponCode) {
+                                let valid = orderManager.applyCoupon(couponCode)
+                                MilliwaysRum.emit(
+                                    "coupon_apply_attempted",
+                                    metadata: [
+                                        "promo.result": valid ? "valid" : "invalid",
+                                        "cart.line_item_count_bucket": MilliwaysRum.lineItemCountBucket(
+                                            orderManager.items.count
+                                        ),
+                                        "menu.section_key": orderManager.dominantSectionKey,
+                                    ]
+                                )
+                                if valid {
                                     couponCode = ""
                                     couponError = nil
                                 } else {

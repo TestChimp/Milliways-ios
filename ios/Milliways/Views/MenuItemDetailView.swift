@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MenuItemDetailView: View {
     let item: MenuItem
+    let sectionKey: String
     @ObservedObject var orderManager: OrderManager
     @Environment(\.dismiss) var dismiss
     @State private var quantity = 1
@@ -91,7 +92,7 @@ struct MenuItemDetailView: View {
 
                         // Add to Order button
                         Button(action: {
-                            orderManager.addItem(item, quantity: quantity)
+                            orderManager.addItem(item, quantity: quantity, sectionKey: sectionKey)
                             dismiss()
                         }) {
                             Text("Add to Order")

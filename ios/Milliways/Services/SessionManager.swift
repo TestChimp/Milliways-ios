@@ -28,6 +28,10 @@ final class SessionManager: ObservableObject {
     }
 
     func signOut() {
+        MilliwaysRum.emit(
+            "session_ended",
+            metadata: ["exit.reason": "sign_out"]
+        )
         session = nil
         errorMessage = nil
     }

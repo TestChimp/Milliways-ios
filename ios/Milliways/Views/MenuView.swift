@@ -7,11 +7,17 @@
 
 import SwiftUI
 
+private struct MenuItemSelection: Identifiable {
+    let item: MenuItem
+    let sectionKey: String
+    var id: Int { item.id }
+}
+
 struct MenuView: View {
     @ObservedObject var orderManager: OrderManager
     @ObservedObject var sessionManager: SessionManager
     @Binding var popToRoot: Bool
-    @State private var selectedItem: MenuItem?
+    @State private var selectedItem: MenuItemSelection?
     @State private var menuSections: [MenuSection] = []
     @State private var isLoadingMenu = false
     @State private var menuError: String?
@@ -46,7 +52,10 @@ struct MenuView: View {
                                     ForEach(section.items) { item in
                                         MenuItemCard(item: item)
                                             .onTapGesture {
-                                                selectedItem = item
+                                                selectedItem = MenuItemSelection(
+                                                    item: item,
+                                                    sectionKey: MilliwaysRum.sectionKey(from: section.title)
+                                                )
                                             }
                                             .padding(.horizontal)
                                     }
@@ -132,14 +141,33 @@ struct MenuView: View {
                 }
             }
         }
-        .sheet(item: $selectedItem) { item in
-            MenuItemDetailView(item: item, orderManager: orderManager)
+        .sheet(item: $selectedItem) { selection in
+            MenuItemDetailView(
+                item: selection.item,
+                sectionKey: selection.sectionKey,
+                orderManager: orderManager
+            )
+        }
+        .onAppear {
+            if !menuSections.isEmpty {
+                emitMenuLoaded()
+            }
         }
         .task {
             if menuSections.isEmpty {
                 await loadMenu()
             }
         }
+    }
+
+    private func emitMenuLoaded() {
+        MilliwaysRum.emit(
+            "menu_loaded",
+            metadata: [
+                "menu.section_count_bucket": MilliwaysRum.menuSectionCountBucket(menuSections.count),
+                "cart.line_item_count_bucket": MilliwaysRum.lineItemCountBucket(orderManager.items.count),
+            ]
+        )
     }
 
     @MainActor
@@ -149,13 +177,7 @@ struct MenuView: View {
 
         do {
             menuSections = try await APIClient.shared.fetchMenu()
-            MilliwaysRum.emit(
-                "menu_loaded",
-                metadata: [
-                    "menu.section_count_bucket": MilliwaysRum.menuSectionCountBucket(menuSections.count),
-                    "cart.line_item_count_bucket": MilliwaysRum.lineItemCountBucket(orderManager.items.count),
-                ]
-            )
+            emitMenuLoaded()
         } catch {
             menuError = error.localizedDescription
         }

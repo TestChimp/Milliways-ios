@@ -105,4 +105,21 @@ enum MilliwaysRum {
         default: return "6_plus"
         }
     }
+
+    static func ordersCountBucket(_ count: Int) -> String {
+        switch count {
+        case 0: return "0"
+        case 1: return "1"
+        case 2 ... 5: return "2_5"
+        default: return "6_plus"
+        }
+    }
+
+    /// Low-cardinality slug from a menu section title (e.g. "Main Dishes" → `main_dishes`).
+    static func sectionKey(from title: String) -> String {
+        let parts = title.lowercased()
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { !$0.isEmpty }
+        return parts.isEmpty ? "unknown" : parts.joined(separator: "_")
+    }
 }

@@ -12,6 +12,7 @@ struct OrderItem: Identifiable {
     let id = UUID()
     let menuItem: MenuItem
     var quantity: Int
+    var sectionKey: String
 
     var totalPrice: Double {
         Double(quantity) * menuItem.price
@@ -38,8 +39,16 @@ class OrderManager: ObservableObject {
         items.reduce(0) { $0 + $1.quantity }
     }
 
-    func addItem(_ item: MenuItem, quantity: Int) {
-        items.append(OrderItem(menuItem: item, quantity: quantity))
+    func addItem(_ item: MenuItem, quantity: Int, sectionKey: String = "unknown") {
+        items.append(OrderItem(menuItem: item, quantity: quantity, sectionKey: sectionKey))
+    }
+
+    /// First non-unknown section in cart, for promo/menu slice metadata.
+    var dominantSectionKey: String {
+        for line in items where line.sectionKey != "unknown" {
+            return line.sectionKey
+        }
+        return "unknown"
     }
 
     func removeItem(at index: Int) {

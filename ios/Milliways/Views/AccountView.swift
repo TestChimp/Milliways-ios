@@ -144,8 +144,22 @@ struct AccountView: View {
 
         do {
             orders = try await APIClient.shared.fetchOrders(token: token)
+            MilliwaysRum.emit(
+                "account_viewed",
+                metadata: [
+                    "account.orders_count_bucket": MilliwaysRum.ordersCountBucket(orders.count),
+                    "account.load_outcome": "success",
+                ]
+            )
         } catch {
             ordersError = error.localizedDescription
+            MilliwaysRum.emit(
+                "account_viewed",
+                metadata: [
+                    "account.orders_count_bucket": "0",
+                    "account.load_outcome": "error",
+                ]
+            )
         }
 
         isLoadingOrders = false

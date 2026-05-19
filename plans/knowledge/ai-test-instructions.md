@@ -65,8 +65,9 @@ Deferred. When enabled, use macOS for iOS Simulator + `tests/` as cwd; pass `TES
 ## TrueCoverage Plan
 
 - **Enabled** for staging unified project `0853e684-9871-483a-bc71-ca84d922be7c`.
-- **Instrumented events (current slice only):** `auth-session-started`, `menu-loaded`, `order-submitted-success` — see `plans/events/`.
-- RUM `environment` aligns with `TESTCHIMP_ENV` / build config (`staging` or `QA` for local Debug).
+- **Instrumented events:** `auth-session-started`, `menu-loaded`, `order-submitted-success`, `coupon-apply-attempted`, `account-viewed`, `session-ended` (iOS for the last three) — see `plans/events/`.
+- **TrueCoverage demo:** run SmartTests under `staging`; manual production walkthrough — [`truecoverage-demo-production-walkthrough.md`](truecoverage-demo-production-walkthrough.md). Do not add coupon/account specs before a coverage demo if production-only contrast is required.
+- RUM `environment` aligns with `TESTCHIMP_ENV` / build config (`staging` or `QA` for local Debug); override with scheme env `TESTCHIMP_ENV=production` for manual prod emits.
 - Mobile SmartTests: `installTestChimp(..., { uiFixture: 'screen' })` in `tests/mobile/fixtures/index.js` and `projects[].use.platform` (`ios` / `android`) in `tests/mobilewright.config.ts`. `@testchimp/playwright` ≥ **0.2.3** applies one TrueCoverage `v1/set` from the **`device`** fixture (after `launchApp`, before `screen`). Platform for `afterEach` flush comes from `projects[].use.platform`, not `TESTCHIMP_PROJECT_TYPE`.
 
 ## Mocking Plan
@@ -78,6 +79,8 @@ Deferred. When enabled, use macOS for iOS Simulator + `tests/` as cwd; pass `TES
 
 - Use `markScreenState` in UI SmartTests when running explorations.
 - Set `EXPLORECHIMP_ENABLED` per team policy; `TESTCHIMP_BRANCH_NAME` from current git branch for local runs.
+- **NETWORK regex:** `http://localhost:3001` (local Docker API per `MILLIWAYS_API_BASE_URL` / `.env-QA`)
+- **Default scope:** `mobile/e2e/common/*.spec.js` on `--project=ios` (Android optional second pass)
 
 ## Past learnings — authoring & validation (FAQ)
 
@@ -100,6 +103,10 @@ Deferred. When enabled, use macOS for iOS Simulator + `tests/` as cwd; pass `TES
 ### Q: Seed user fails
 
 **A:** Ensure Docker backend is up and `curl -fsS http://localhost:3001/health` succeeds before running tests.
+
+### Q: ExploreChimp / SmartTests fail on iOS sign-in or `launchApp` with two booted simulators
+
+**A:** Boot only **iPhone 17 Pro** (`cd ios && make boot`) before Mobilewright. Multiple booted simulators (e.g. iPhone 16e + 17 Pro) can cause `launchApp` timeouts or sign-in flakes. Use a **fresh** `TESTCHIMP_BATCH_INVOCATION_ID` per exploration batch (reuse caused `explorations_pkey` duplicate on staging). Warm up with `npm run test:smoke` from `tests/` if sign-in is flaky after a failed batch.
 
 ### Q: iOS sign-in never reaches “New Order” / simctl launch exit 4
 
