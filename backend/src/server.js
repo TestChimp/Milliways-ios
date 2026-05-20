@@ -30,6 +30,12 @@ function normalizeEmail(email) {
   return String(email ?? '').trim().toLowerCase();
 }
 
+const REFUND_WINDOW_MS = 2 * 24 * 60 * 60 * 1000;
+
+function isRefundEligible(createdAt) {
+  return Date.now() - new Date(createdAt).getTime() < REFUND_WINDOW_MS;
+}
+
 async function requireUser(req, res, next) {
   try {
     const header = req.get('authorization') ?? '';
@@ -54,6 +60,103 @@ async function requireUser(req, res, next) {
 
 app.get('/health', (_req, res) => {
   res.json({ ok: true });
+});
+
+app.post('/qa/orders', async (req, res, next) => {
+  try {
+    const body = req.body ?? {};
+    const email = normalizeEmail(body.email);
+    const password = String(body.password ?? '');
+    const items = Array.isArray(body.items) ? body.items : [];
+    const ageDays = Number(body.ageDays ?? 0);
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    if (items.length === 0) {
+      return res.status(400).json({ error: 'Order must include at least one item' });
+    }
+
+    const userResult = await query(
+      'SELECT id FROM users WHERE email = $1 AND password = $2',
+      [email, password],
+    );
+
+    if (userResult.rowCount === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const userId = userResult.rows[0].id;
+
+    const order = await withTransaction(async (client) => {
+      let totalCents = 0;
+      const orderItems = [];
+
+      for (const item of items) {
+        const menuItemId = Number(item.menuItemId);
+        const quantity = Number(item.quantity);
+
+        if (!Number.isInteger(menuItemId) || !Number.isInteger(quantity) || quantity < 1) {
+          const error = new Error('Invalid order item');
+          error.statusCode = 400;
+          throw error;
+        }
+
+        const menuResult = await client.query(
+          'SELECT id, name, price_cents FROM menu_items WHERE id = $1',
+          [menuItemId],
+        );
+
+        if (menuResult.rowCount === 0) {
+          const error = new Error(`Menu item ${menuItemId} was not found`);
+          error.statusCode = 400;
+          throw error;
+        }
+
+        const menuItem = menuResult.rows[0];
+        totalCents += menuItem.price_cents * quantity;
+        orderItems.push({ menuItem, quantity });
+      }
+
+      const createdAt = new Date(Date.now() - ageDays * 24 * 60 * 60 * 1000);
+      const orderResult = await client.query(
+        `
+          INSERT INTO orders (user_id, status, total_cents, created_at, updated_at)
+          VALUES ($1, $2, $3, $4, $4)
+          RETURNING id, status, total_cents, created_at
+        `,
+        [userId, 'received', totalCents, createdAt],
+      );
+      const createdOrder = orderResult.rows[0];
+
+      for (const item of orderItems) {
+        await client.query(
+          'INSERT INTO order_items (order_id, menu_item_id, name, price_cents, quantity) VALUES ($1, $2, $3, $4, $5)',
+          [
+            createdOrder.id,
+            item.menuItem.id,
+            item.menuItem.name,
+            item.menuItem.price_cents,
+            item.quantity,
+          ],
+        );
+      }
+
+      return createdOrder;
+    });
+
+    return res.status(201).json({
+      order: {
+        id: order.id,
+        status: order.status,
+        totalCents: order.total_cents,
+        createdAt: order.created_at,
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
 });
 
 app.post('/qa/users', async (req, res, next) => {
@@ -244,10 +347,17 @@ app.get('/orders', requireUser, async (req, res, next) => {
   try {
     const result = await query(
       `
-        SELECT id, status, total_cents, created_at, updated_at
-        FROM orders
-        WHERE user_id = $1
-        ORDER BY created_at DESC
+        SELECT
+          o.id,
+          o.status,
+          o.total_cents,
+          o.created_at,
+          o.updated_at,
+          rr.id AS refund_request_id
+        FROM orders o
+        LEFT JOIN refund_requests rr ON rr.order_id = o.id
+        WHERE o.user_id = $1
+        ORDER BY o.created_at DESC
       `,
       [req.user.id],
     );
@@ -259,7 +369,64 @@ app.get('/orders', requireUser, async (req, res, next) => {
         totalCents: row.total_cents,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
+        refundEligible: isRefundEligible(row.created_at) && !row.refund_request_id,
+        refundRequested: Boolean(row.refund_request_id),
       })),
+    });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+app.post('/orders/:orderId/refunds', requireUser, async (req, res, next) => {
+  try {
+    const orderId = Number(req.params.orderId);
+
+    if (!Number.isInteger(orderId)) {
+      return res.status(400).json({ error: 'Invalid order id' });
+    }
+
+    const orderResult = await query(
+      'SELECT id, created_at FROM orders WHERE id = $1 AND user_id = $2',
+      [orderId, req.user.id],
+    );
+
+    if (orderResult.rowCount === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    const order = orderResult.rows[0];
+
+    if (!isRefundEligible(order.created_at)) {
+      return res.status(400).json({
+        error: 'Refund requests are only available for orders less than 2 days old',
+      });
+    }
+
+    const existing = await query('SELECT id FROM refund_requests WHERE order_id = $1', [orderId]);
+    if (existing.rowCount > 0) {
+      return res.status(409).json({ error: 'A refund request already exists for this order' });
+    }
+
+    const insertResult = await query(
+      `
+        INSERT INTO refund_requests (order_id, user_id, status)
+        VALUES ($1, $2, 'pending')
+        RETURNING id, order_id, status, created_at
+      `,
+      [orderId, req.user.id],
+    );
+
+    const refundRequest = insertResult.rows[0];
+
+    return res.status(201).json({
+      message: 'Your refund request was received.',
+      refundRequest: {
+        id: refundRequest.id,
+        orderId: refundRequest.order_id,
+        status: refundRequest.status,
+        createdAt: refundRequest.created_at,
+      },
     });
   } catch (error) {
     return next(error);

@@ -120,6 +120,15 @@ export async function initializeDatabase() {
       price_cents INTEGER NOT NULL,
       quantity INTEGER NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS refund_requests (
+      id SERIAL PRIMARY KEY,
+      order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (order_id)
+    );
   `);
 
   await seedMenuItems();

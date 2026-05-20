@@ -11,6 +11,7 @@ import com.mobilenext.milliways.data.ApiResult
 import com.mobilenext.milliways.data.AuthSession
 import com.mobilenext.milliways.data.BackendOrder
 import com.mobilenext.milliways.data.BackendOrderStatus
+import com.mobilenext.milliways.data.RefundRequestResponse
 import com.mobilenext.milliways.data.CreateOrderItem
 import com.mobilenext.milliways.data.DemoUser
 import com.mobilenext.milliways.data.MenuItem
@@ -66,6 +67,10 @@ class AppViewModel(
         private set
     var ordersError by mutableStateOf<String?>(null)
         private set
+    var refundingOrderId by mutableStateOf<Int?>(null)
+        private set
+    var refundMessage by mutableStateOf<String?>(null)
+        private set
 
     val totalPrice: Double get() = cartLines.sumOf { it.totalPrice }
     val finalTotal: Double get() = totalPrice - couponDiscount
@@ -77,10 +82,6 @@ class AppViewModel(
         val ok = when (val r = withContext(Dispatchers.IO) { api.signIn(email, password) }) {
             is ApiResult.Ok -> {
                 session = r.value
-                MilliwaysRum.emit(
-                    "auth_session_started",
-                    mapOf("entry.auth_kind" to "sign_in"),
-                )
                 true
             }
             is ApiResult.Err -> {
@@ -98,10 +99,6 @@ class AppViewModel(
         val ok = when (val r = withContext(Dispatchers.IO) { api.signUp(email, password) }) {
             is ApiResult.Ok -> {
                 session = r.value
-                MilliwaysRum.emit(
-                    "auth_session_started",
-                    mapOf("entry.auth_kind" to "sign_up"),
-                )
                 true
             }
             is ApiResult.Err -> {
@@ -148,16 +145,7 @@ class AppViewModel(
             menuLoading = true
             menuError = null
             when (val r = withContext(Dispatchers.IO) { api.fetchMenu() }) {
-                is ApiResult.Ok -> {
-                    menuSections = r.value
-                    MilliwaysRum.emit(
-                        "menu_loaded",
-                        mapOf(
-                            "menu.section_count_bucket" to MilliwaysRum.menuSectionCountBucket(r.value.size),
-                            "cart.line_item_count_bucket" to MilliwaysRum.lineItemCountBucket(cartLines.size),
-                        ),
-                    )
-                }
+                is ApiResult.Ok -> menuSections = r.value
                 is ApiResult.Err -> menuError = r.message
             }
             menuLoading = false
@@ -177,6 +165,26 @@ class AppViewModel(
         }
     }
 
+    fun requestRefund(orderId: Int, onComplete: (RefundRequestResponse) -> Unit = {}) {
+        val t = token ?: return
+        viewModelScope.launch {
+            refundingOrderId = orderId
+            when (val r = withContext(Dispatchers.IO) { api.requestRefund(orderId, t) }) {
+                is ApiResult.Ok -> {
+                    refundMessage = r.value.message
+                    onComplete(r.value)
+                    loadOrders()
+                }
+                is ApiResult.Err -> refundMessage = r.message
+            }
+            refundingOrderId = null
+        }
+    }
+
+    fun clearRefundMessage() {
+        refundMessage = null
+    }
+
     suspend fun submitOrder(): Result<Unit> {
         val t = token ?: return Result.failure(IllegalStateException("Please sign in first"))
         val items = cartLines.map { CreateOrderItem(menuItemId = it.menuItem.id, quantity = it.quantity) }
@@ -187,13 +195,6 @@ class AppViewModel(
                     id = r.value.id,
                     status = r.value.status,
                     updatedAt = r.value.createdAt,
-                )
-                MilliwaysRum.emit(
-                    "order_submitted_success",
-                    mapOf(
-                        "cart.line_item_count_bucket" to MilliwaysRum.lineItemCountBucket(cartLines.size),
-                        "order.has_coupon" to if (appliedCouponCode != null) "true" else "false",
-                    ),
                 )
                 Result.success(Unit)
             }

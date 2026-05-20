@@ -2,17 +2,16 @@
 
   <img src="./docs/screenshot.png" alt width="300" align="right" style="margin-left: 3em; margin-bottom: 3em; border: 2px solid #444; border-radius: 12px; padding: 4px;" />
 
-A demo restaurant stack inspired by The Restaurant at the End of the Universe: **iOS** (SwiftUI under `ios/`), **Android** (Kotlin under `android/` when present), and a shared **Node** backend. Designed for mobile automation and [TestChimp](https://testchimp.io) demos.
+A demo restaurant stack inspired by The Restaurant at the End of the Universe: **iOS** (SwiftUI under `ios/`), **Android** (Kotlin under `android/`), and a shared **Node** backend. Designed for mobile automation demos.
 
 ## Repository layout
 
 | Path | Contents |
 |------|----------|
 | `backend/` | Node demo API and Docker image |
-| `ios/` | Xcode project, app sources, `Makefile`, and **`ios/tc-tests/`** (TestChimp SmartTests / Mobilewright). Plans: **`ios/plans/`**. |
-| `android/` | **Kotlin + Compose** app (`:app`), same flows as iOS; **`android/tests/`** (TestChimp SmartTests / Mobilewright). Plans: **`android/plans/`**. |
-| `plans/` (repo root) | Legacy markdown test plans from an earlier single-folder mapping; **canonical** plans for TestChimp live under **`ios/plans/`** and **`android/plans/`** per platform project. |
-| `scripts/` | Local CI helpers (e.g. iOS Simulator + SmartTests) |
+| `ios/` | Xcode project, app sources, and `Makefile` |
+| `android/` | **Kotlin + Compose** app (`:app`), same flows as iOS |
+| `plans/` | Markdown test plans (stories, scenarios, knowledge) |
 
 ## Purpose
 

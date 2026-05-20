@@ -28,10 +28,6 @@ final class SessionManager: ObservableObject {
     }
 
     func signOut() {
-        MilliwaysRum.emit(
-            "session_ended",
-            metadata: ["exit.reason": "sign_out"]
-        )
         session = nil
         errorMessage = nil
     }
@@ -47,12 +43,6 @@ final class SessionManager: ObservableObject {
 
         do {
             session = try await request()
-            if session != nil {
-                MilliwaysRum.emit(
-                    "auth_session_started",
-                    metadata: ["entry.auth_kind": kind.rawValue]
-                )
-            }
         } catch {
             errorMessage = error.localizedDescription
         }

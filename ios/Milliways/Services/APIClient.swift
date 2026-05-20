@@ -61,6 +61,20 @@ struct BackendOrder: Codable, Identifiable {
     let totalCents: Int
     let createdAt: String
     let updatedAt: String?
+    let refundEligible: Bool?
+    let refundRequested: Bool?
+}
+
+struct RefundRequestResponse: Codable {
+    let message: String
+    let refundRequest: BackendRefundRequest
+}
+
+struct BackendRefundRequest: Codable, Identifiable {
+    let id: Int
+    let orderId: Int
+    let status: String
+    let createdAt: String
 }
 
 struct BackendOrderStatus: Codable, Identifiable {
@@ -135,6 +149,15 @@ struct APIClient {
         )
 
         return response.order
+    }
+
+    func requestRefund(orderId: Int, token: String) async throws -> RefundRequestResponse {
+        try await send(
+            "/orders/\(orderId)/refunds",
+            method: "POST",
+            token: token,
+            responseType: RefundRequestResponse.self
+        )
     }
 
     private func send<Response: Decodable, Body: Encodable>(
