@@ -28,8 +28,7 @@ android {
 
         val tcProjectId = project.tcProp("TESTCHIMP_PROJECT_ID")
         val tcApiKey = project.tcProp("TESTCHIMP_API_KEY")
-        val tcBackend =
-            project.tcProp("TESTCHIMP_BACKEND_URL").ifEmpty { "https://featureservice-staging.testchimp.io" }
+        val tcBackend = project.tcProp("TESTCHIMP_BACKEND_URL")
         buildConfigField("String", "TESTCHIMP_PROJECT_ID", tcProjectId.escapeForBuildConfig())
         buildConfigField("String", "TESTCHIMP_API_KEY", tcApiKey.escapeForBuildConfig())
         buildConfigField("String", "TESTCHIMP_BACKEND_URL", tcBackend.escapeForBuildConfig())

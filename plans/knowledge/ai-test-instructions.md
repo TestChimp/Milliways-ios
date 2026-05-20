@@ -4,15 +4,15 @@
 
 - **SmartTests root:** `tests/` (`.testchimp-tests`, `project_type=mobile`) — iOS + Android via Mobilewright `ios` / `android` projects.
 - **Plans root:** `plans/` (`.testchimp-plans`) — unified mobile TestChimp project.
-- **TestChimp project ID:** `0853e684-9871-483a-bc71-ca84d922be7c` (staging backend; single project for both platforms).
-- **MCP / CLI / runner env:** repo-root `.cursor/mcp.json` → `TESTCHIMP_API_KEY`, `TESTCHIMP_BACKEND_URL` (staging). `npm run test:*` / `scripts/run-smarttests.sh` apply these to the Mobilewright child process automatically. Never commit keys.
+- **TestChimp project ID:** `3d36a0e2-dfb8-447a-9674-3c1a4650b925` (unified mobile project for iOS + Android).
+- **MCP / CLI / runner env:** repo-root `.cursor/mcp.json` → `TESTCHIMP_API_KEY`, `TESTCHIMP_PROJECT_ID`. Optional `TESTCHIMP_BACKEND_URL` only if ingest must override the SDK/reporter default. `npm run test:*` / `scripts/run-smarttests.sh` apply MCP env to the Mobilewright child process automatically. Never commit keys.
 
 ## Init progress
 
 ### Completed Items
 
 - Unified `tests/` + `plans/` markers; mobile scaffold with `@testchimp/playwright` reporter.
-- Workstation MCP at `.cursor/mcp.json` (staging).
+- Workstation MCP at `.cursor/mcp.json` (project ID + API key).
 - Initial SmartTests: `mobile/e2e/common/menu.spec.js`, `navigation.spec.js` (iOS + Android).
 - TrueCoverage RUM wired in app; events documented under `plans/events/` (no expansion in init).
 
@@ -48,23 +48,23 @@ Or from `tests/` after `npm ci`:
 
 ```bash
 cd tests
-npm run test:ios      # loads .cursor/mcp.json → TESTCHIMP_BACKEND_URL + API key
+npm run test:ios      # loads .cursor/mcp.json → TESTCHIMP_API_KEY (+ optional BACKEND_URL)
 npm run test:android
 ```
 
-`scripts/run-mobilewright-with-mcp-env.mjs` **requires** `.cursor/mcp.json` and exports **`TESTCHIMP_API_KEY`** + **`TESTCHIMP_BACKEND_URL`** (staging) on the Mobilewright process. Reporter does **not** use `TESTCHIMP_PROJECT_ID` (that is for app TrueCoverage/RUM only). `TESTCHIMP_TESTS_FOLDER=.` (paths relative to SmartTests root `tests/`).
+`scripts/run-mobilewright-with-mcp-env.mjs` **requires** `.cursor/mcp.json` and exports **`TESTCHIMP_API_KEY`** (and **`TESTCHIMP_BACKEND_URL`** when set in MCP `env`) on the Mobilewright process. Reporter does **not** use `TESTCHIMP_PROJECT_ID` (that is for app TrueCoverage/RUM only). `TESTCHIMP_TESTS_FOLDER=.` (paths relative to SmartTests root `tests/`).
 
 Overrides: `IOS_APP_PATH`, `ANDROID_APK_PATH`, `MILLIWAYS_API_BASE_URL` (`tests/.env-QA`).
 
-RUM: `android/gradle.properties` + Xcode `TESTCHIMP_*` build settings.
+RUM: `android/gradle.properties` + Xcode `TESTCHIMP_*` build settings — keep **`TESTCHIMP_PROJECT_ID`** / **`TESTCHIMP_API_KEY`** in sync with `.cursor/mcp.json`. Leave **`TESTCHIMP_BACKEND_URL`** empty unless you need a non-default ingest host (SDK default otherwise).
 
 ### CI - Test Execution
 
-Deferred. When enabled, use macOS for iOS Simulator + `tests/` as cwd; pass `TESTCHIMP_API_KEY` and `TESTCHIMP_BACKEND_URL` as secrets.
+Deferred. When enabled, use macOS for iOS Simulator + `tests/` as cwd; pass `TESTCHIMP_API_KEY` as a secret (and `TESTCHIMP_BACKEND_URL` only if your org overrides the default ingest host).
 
 ## TrueCoverage Plan
 
-- **Enabled** for staging unified project `0853e684-9871-483a-bc71-ca84d922be7c`.
+- **Enabled** for project `3d36a0e2-dfb8-447a-9674-3c1a4650b925`.
 - **Instrumented events:** `auth-session-started`, `menu-loaded`, `order-submitted-success`, `coupon-apply-attempted`, `account-viewed`, `session-ended` (iOS for the last three) — see `plans/events/`.
 - **TrueCoverage demo:** run SmartTests under `staging`; manual production walkthrough — [`truecoverage-demo-production-walkthrough.md`](truecoverage-demo-production-walkthrough.md). Do not add coupon/account specs before a coverage demo if production-only contrast is required.
 - RUM `environment` aligns with `TESTCHIMP_ENV` / build config (`staging` or `QA` for local Debug); override with scheme env `TESTCHIMP_ENV=production` for manual prod emits.
@@ -86,7 +86,7 @@ Deferred. When enabled, use macOS for iOS Simulator + `tests/` as cwd; pass `TES
 
 ### Q: Reporter or API returns 401
 
-**A:** Use `npm run test:ios` from `tests/` or `./scripts/run-smarttests.sh ios`. Confirm: `Reporter env: TESTCHIMP_BACKEND_URL=https://featureservice-staging.testchimp.io TESTCHIMP_API_KEY=set`. Reporter does **not** use `TESTCHIMP_PROJECT_ID`. If runs ingest but `testFound=false`, sync the mapped **`tests/`** folder in TestChimp (Git integration).
+**A:** Use `npm run test:ios` from `tests/` or `./scripts/run-smarttests.sh ios`. Confirm: `Reporter env: … TESTCHIMP_API_KEY=set` (and `TESTCHIMP_BACKEND_URL=…` only if set in MCP). Reporter does **not** use `TESTCHIMP_PROJECT_ID`. If runs ingest but `testFound=false`, sync the mapped **`tests/`** folder in TestChimp (Git integration).
 
 ### Q: Tests cannot find the app bundle or APK
 
@@ -106,7 +106,7 @@ Deferred. When enabled, use macOS for iOS Simulator + `tests/` as cwd; pass `TES
 
 ### Q: ExploreChimp / SmartTests fail on iOS sign-in or `launchApp` with two booted simulators
 
-**A:** Boot only **iPhone 17 Pro** (`cd ios && make boot`) before Mobilewright. Multiple booted simulators (e.g. iPhone 16e + 17 Pro) can cause `launchApp` timeouts or sign-in flakes. Use a **fresh** `TESTCHIMP_BATCH_INVOCATION_ID` per exploration batch (reuse caused `explorations_pkey` duplicate on staging). Warm up with `npm run test:smoke` from `tests/` if sign-in is flaky after a failed batch.
+**A:** Boot only **iPhone 17 Pro** (`cd ios && make boot`) before Mobilewright. Multiple booted simulators (e.g. iPhone 16e + 17 Pro) can cause `launchApp` timeouts or sign-in flakes. Use a **fresh** `TESTCHIMP_BATCH_INVOCATION_ID` per exploration batch (reuse caused `explorations_pkey` duplicate in TestChimp). Warm up with `npm run test:smoke` from `tests/` if sign-in is flaky after a failed batch.
 
 ### Q: iOS sign-in never reaches “New Order” / simctl launch exit 4
 

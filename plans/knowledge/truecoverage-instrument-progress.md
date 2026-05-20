@@ -1,6 +1,6 @@
 # TrueCoverage instrumentation progress
 
-Unified mobile project: `0853e684-9871-483a-bc71-ca84d922be7c` (staging).
+Unified mobile project: `3d36a0e2-dfb8-447a-9674-3c1a4650b925` (credentials in `.cursor/mcp.json`, baked into Xcode / Gradle).
 
 ## Done (instrumented + `plans/events/*.event.md`)
 

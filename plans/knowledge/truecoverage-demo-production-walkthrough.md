@@ -25,13 +25,9 @@ The app reads **`TESTCHIMP_ENV` from the simulator process**, not from Mobilewri
    |------|--------|
    | `TESTCHIMP_ENV` | `production` |
 
-4. Optional: confirm ingest URL is set (usually from build settings):
+4. Do **not** set `TESTCHIMP_BACKEND_URL` unless you intentionally override RUM ingest — build settings leave it empty so the SDK uses the default production ingress (same as `.cursor/mcp.json` without a backend override).
 
-   | Name | Value |
-   |------|--------|
-   | `TESTCHIMP_BACKEND_URL` | `https://featureservice-staging.testchimp.io` |
-
-5. Build and run on the **iOS Simulator** (Debug is fine; the env var overrides the Debug `staging` plist value).
+5. Build and run on the **iOS Simulator** (Debug is fine; the env var overrides the Debug `staging` plist value). **Clean build** after changing `TESTCHIMP_*` in `project.pbxproj`.
 
 ### 3. Confirm RUM initialized
 
@@ -121,7 +117,7 @@ Default Debug build uses **`TESTCHIMP_ENV=staging`** from Xcode build settings; 
 | Issue | Fix |
 |-------|-----|
 | All emits show `staging` | Add `TESTCHIMP_ENV=production` to the **Run** scheme env vars; clean build and rerun. |
-| No events in TestChimp | Background app to flush; confirm API key in `TESTCHIMP_*` build settings; check console for RUM init. |
+| No events in TestChimp | Background app to flush; confirm `TESTCHIMP_PROJECT_ID` / `TESTCHIMP_API_KEY` in `project.pbxproj` match `.cursor/mcp.json`; clean build; check console for RUM init (`projectId=3d36a0e2-…`). |
 | Sign-up fails (email taken) | Use a new unique email. |
 | `MARVIN` invalid | Ensure cart is non-empty before Apply. |
 | Coupon already applied | Invalid-code step still works; valid step may need a fresh session without MARVIN. |

@@ -11,10 +11,10 @@
     "doctor": "npx mobilewright doctor"
   },
   "dependencies": {
-    "@mobilewright/test": "^0.0.37",
-    "@testchimp/playwright": "^0.2.3",
+    "@mobilewright/test": "^0.0.38",
+    "@testchimp/playwright": "^0.2.6",
     "dotenv": "^16.4.5",
-    "mobilewright": "^0.0.37"
+    "mobilewright": "^0.0.38"
   },
   "overrides": {
     "@playwright/test": "1.59.1",
