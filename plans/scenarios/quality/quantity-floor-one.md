@@ -3,7 +3,8 @@ type: scenario
 id: TS-115
 title: Menu item quantity cannot go below one
 story: US-105
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites

@@ -3,7 +3,8 @@ type: scenario
 id: TS-112
 title: Cart is empty after completing an order
 story: US-104
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites

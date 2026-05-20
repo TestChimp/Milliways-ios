@@ -2,7 +2,8 @@
 type: story
 id: US-101
 title: Browse restaurant menu
-status: active
+created_date: 2026-05-19
+priority: high
 ---
 
 ## Summary

@@ -3,7 +3,8 @@ type: scenario
 id: TS-111
 title: Closing delivery screen returns to welcome
 story: US-104
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites

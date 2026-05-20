@@ -3,7 +3,8 @@ type: scenario
 id: TS-116
 title: Checkout after coupon and line removal handles totals safely
 story: US-105
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites

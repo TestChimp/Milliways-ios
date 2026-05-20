@@ -2,7 +2,8 @@
 type: story
 id: US-105
 title: Cart and checkout edge cases
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Summary

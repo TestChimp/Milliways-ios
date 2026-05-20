@@ -3,7 +3,8 @@ type: scenario
 id: TS-106
 title: Shipping disclaimer visible at bottom of menu
 story: US-101
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites

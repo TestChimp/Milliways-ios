@@ -3,7 +3,8 @@ type: scenario
 id: TS-105
 title: Main dishes are listed on the menu
 story: US-101
-status: active
+created_date: 2026-05-19
+priority: medium
 ---
 
 ## Prerequisites
