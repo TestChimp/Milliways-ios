@@ -117,6 +117,16 @@ struct OrderView: View {
                                 .accessibilityLabel("Coupon code")
                             Button("Apply") {
                                 let valid = orderManager.applyCoupon(couponCode)
+                                MilliwaysRum.emit(
+                                    "coupon_apply_attempted",
+                                    metadata: [
+                                        "promo.result": valid ? "valid" : "invalid",
+                                        "cart.line_item_count_bucket": MilliwaysRum.lineItemCountBucket(
+                                            orderManager.items.count
+                                        ),
+                                        "menu.section_key": orderManager.dominantSectionKey,
+                                    ]
+                                )
                                 if valid {
                                     couponCode = ""
                                     couponError = nil
@@ -197,6 +207,13 @@ struct OrderView: View {
             let cents = UInt(max(orderManager.finalTotal, 0) * 100)
             print("Processing payment of \(cents) cents")
             _ = try await orderManager.submitOrder(token: token)
+            MilliwaysRum.emit(
+                "order_submitted_success",
+                metadata: [
+                    "cart.line_item_count_bucket": MilliwaysRum.lineItemCountBucket(orderManager.items.count),
+                    "order.has_coupon": orderManager.appliedCouponCode != nil ? "true" : "false",
+                ]
+            )
             showDelivery = true
         } catch {
             orderError = error.localizedDescription

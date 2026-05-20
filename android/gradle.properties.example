@@ -1,0 +1,6 @@
+# Copy to android/gradle.properties or ~/.gradle/gradle.properties (do not commit real keys).
+# Values should match TestChimp → Project Settings → Key management (same as .cursor/mcp.json).
+TESTCHIMP_PROJECT_ID=
+TESTCHIMP_API_KEY=
+# Optional RUM ingest override (default in build.gradle.kts if empty)
+TESTCHIMP_BACKEND_URL=https://featureservice-staging.testchimp.io
