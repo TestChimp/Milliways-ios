@@ -76,6 +76,16 @@ class ApiRepository(
         }
     }
 
+    fun requestRefund(orderId: Int, token: String): ApiResult<RefundRequestResponse> {
+        val (body, err) = post("/orders/$orderId/refunds", token, "{}")
+        if (body == null) return ApiResult.Err(err ?: "Request failed")
+        return try {
+            ApiResult.Ok(json.decodeFromString(RefundRequestResponse.serializer(), body))
+        } catch (e: Exception) {
+            ApiResult.Err(e.message ?: "Invalid refund response")
+        }
+    }
+
     private fun postJson(path: String, jsonBody: String): ApiResult<AuthSession> {
         val (body, err) = post(path, null, jsonBody)
         if (body == null) return ApiResult.Err(err ?: "Request failed")

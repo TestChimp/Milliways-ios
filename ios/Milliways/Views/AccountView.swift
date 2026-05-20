@@ -11,6 +11,9 @@ struct AccountView: View {
     @State private var orders: [BackendOrder] = []
     @State private var isLoadingOrders = false
     @State private var ordersError: String?
+    @State private var refundingOrderId: Int?
+    @State private var refundAlertMessage: String?
+    @State private var showRefundAlert = false
 
     var totalSpent: Double {
         Double(orders.reduce(0) { $0 + $1.totalCents }) / 100
@@ -93,22 +96,11 @@ struct AccountView: View {
                             .foregroundColor(.secondary)
                     } else {
                         ForEach(orders) { order in
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Order #\(order.id)")
-                                        .font(.headline)
-                                    Text(order.status.capitalized)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-
-                                Spacer()
-
-                                Text("₭\(Double(order.totalCents) / 100, specifier: "%.2f")")
-                                    .font(.headline)
-                                    .foregroundColor(.orange)
-                            }
-                            .padding(.vertical, 4)
+                            OrderHistoryRow(
+                                order: order,
+                                isRequestingRefund: refundingOrderId == order.id,
+                                onRefund: { Task { await requestRefund(for: order) } }
+                            )
                         }
                     }
                 }
@@ -132,6 +124,11 @@ struct AccountView: View {
             }
             .task {
                 await loadOrders()
+            }
+            .alert("Refund Request", isPresented: $showRefundAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(refundAlertMessage ?? "")
             }
         }
     }
@@ -163,5 +160,90 @@ struct AccountView: View {
         }
 
         isLoadingOrders = false
+    }
+
+    @MainActor
+    private func requestRefund(for order: BackendOrder) async {
+        guard let token = sessionManager.token else { return }
+        guard order.refundEligible == true, order.refundRequested != true else { return }
+
+        refundingOrderId = order.id
+
+        do {
+            let response = try await APIClient.shared.requestRefund(orderId: order.id, token: token)
+            refundAlertMessage = response.message
+            showRefundAlert = true
+            await loadOrders()
+        } catch {
+            refundAlertMessage = error.localizedDescription
+            showRefundAlert = true
+        }
+
+        refundingOrderId = nil
+    }
+}
+
+private struct OrderHistoryRow: View {
+    let order: BackendOrder
+    let isRequestingRefund: Bool
+    let onRefund: () -> Void
+
+    private var refundButtonEnabled: Bool {
+        order.refundEligible == true && order.refundRequested != true && !isRequestingRefund
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Order #\(order.id)")
+                        .font(.headline)
+                    Text(orderDisplayStatus)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Spacer()
+
+                Text("₭\(Double(order.totalCents) / 100, specifier: "%.2f")")
+                    .font(.headline)
+                    .foregroundColor(.orange)
+            }
+
+            HStack {
+                Spacer()
+                if isRequestingRefund {
+                    ProgressView()
+                        .controlSize(.small)
+                } else {
+                    Button(action: onRefund) {
+                        Text("Refund")
+                            .font(.subheadline.weight(.semibold))
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(!refundButtonEnabled)
+                    .accessibilityLabel("Request Refund")
+                    .accessibilityHint(refundButtonHint)
+                }
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    private var orderDisplayStatus: String {
+        if order.refundRequested == true {
+            return "Refund pending"
+        }
+        return order.status.capitalized
+    }
+
+    private var refundButtonHint: String {
+        if order.refundRequested == true {
+            return "Refund already requested"
+        }
+        if order.refundEligible != true {
+            return "Refund requests are only available for orders less than 2 days old"
+        }
+        return "Request a refund for this order"
     }
 }

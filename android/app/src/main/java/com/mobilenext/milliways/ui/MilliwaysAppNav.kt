@@ -36,9 +36,11 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -330,6 +332,18 @@ private fun AccountSheet(nav: NavHostController, vm: AppViewModel, onClose: () -
     val totalSpent = remember(vm.orders) {
         vm.orders.sumOf { it.totalCents } / 100.0
     }
+    if (vm.refundMessage != null) {
+        AlertDialog(
+            onDismissRequest = { vm.clearRefundMessage() },
+            title = { Text("Refund Request") },
+            text = { Text(vm.refundMessage!!) },
+            confirmButton = {
+                TextButton(onClick = { vm.clearRefundMessage() }) {
+                    Text("OK")
+                }
+            },
+        )
+    }
     Column(Modifier.padding(16.dp)) {
         Text("My Account", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         Row(
@@ -380,16 +394,42 @@ private fun AccountSheet(nav: NavHostController, vm: AppViewModel, onClose: () -
             vm.orders.isEmpty() -> Text("No orders yet", color = MaterialTheme.colorScheme.onSurfaceVariant)
             else -> {
                 vm.orders.forEach { order ->
-                    ListItem(
-                        headlineContent = { Text("Order #${order.id}") },
-                        supportingContent = { Text(order.status.replaceFirstChar { it.uppercaseChar() }) },
-                        trailingContent = {
-                            Text(
-                                usMoney(order.totalCents / 100.0),
-                                color = Color(0xFFFF9800),
-                            )
-                        },
-                    )
+                    val refundEnabled = order.refundEligible && !order.refundRequested && vm.refundingOrderId != order.id
+                    val statusLabel = if (order.refundRequested) {
+                        "Refund pending"
+                    } else {
+                        order.status.replaceFirstChar { it.uppercaseChar() }
+                    }
+                    Column(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                        ListItem(
+                            headlineContent = { Text("Order #${order.id}") },
+                            supportingContent = { Text(statusLabel) },
+                            trailingContent = {
+                                Text(
+                                    usMoney(order.totalCents / 100.0),
+                                    color = Color(0xFFFF9800),
+                                )
+                            },
+                        )
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                        ) {
+                            if (vm.refundingOrderId == order.id) {
+                                CircularProgressIndicator(Modifier.size(24.dp))
+                            } else {
+                                OutlinedButton(
+                                    onClick = { vm.requestRefund(order.id) },
+                                    enabled = refundEnabled,
+                                    modifier = Modifier.semantics {
+                                        contentDescription = "Request Refund"
+                                    },
+                                ) {
+                                    Text("Refund")
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -11,6 +11,7 @@ import com.mobilenext.milliways.data.ApiResult
 import com.mobilenext.milliways.data.AuthSession
 import com.mobilenext.milliways.data.BackendOrder
 import com.mobilenext.milliways.data.BackendOrderStatus
+import com.mobilenext.milliways.data.RefundRequestResponse
 import com.mobilenext.milliways.data.CreateOrderItem
 import com.mobilenext.milliways.data.DemoUser
 import com.mobilenext.milliways.data.MenuItem
@@ -65,6 +66,10 @@ class AppViewModel(
     var ordersLoading by mutableStateOf(false)
         private set
     var ordersError by mutableStateOf<String?>(null)
+        private set
+    var refundingOrderId by mutableStateOf<Int?>(null)
+        private set
+    var refundMessage by mutableStateOf<String?>(null)
         private set
 
     val totalPrice: Double get() = cartLines.sumOf { it.totalPrice }
@@ -175,6 +180,26 @@ class AppViewModel(
             }
             ordersLoading = false
         }
+    }
+
+    fun requestRefund(orderId: Int, onComplete: (RefundRequestResponse) -> Unit = {}) {
+        val t = token ?: return
+        viewModelScope.launch {
+            refundingOrderId = orderId
+            when (val r = withContext(Dispatchers.IO) { api.requestRefund(orderId, t) }) {
+                is ApiResult.Ok -> {
+                    refundMessage = r.value.message
+                    onComplete(r.value)
+                    loadOrders()
+                }
+                is ApiResult.Err -> refundMessage = r.message
+            }
+            refundingOrderId = null
+        }
+    }
+
+    fun clearRefundMessage() {
+        refundMessage = null
     }
 
     suspend fun submitOrder(): Result<Unit> {

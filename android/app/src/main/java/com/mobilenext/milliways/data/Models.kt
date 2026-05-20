@@ -52,6 +52,22 @@ data class BackendOrder(
     @SerialName("totalCents") val totalCents: Int,
     @SerialName("createdAt") val createdAt: String,
     @SerialName("updatedAt") val updatedAt: String? = null,
+    @SerialName("refundEligible") val refundEligible: Boolean = false,
+    @SerialName("refundRequested") val refundRequested: Boolean = false,
+)
+
+@Serializable
+data class RefundRequestResponse(
+    val message: String,
+    @SerialName("refundRequest") val refundRequest: BackendRefundRequest,
+)
+
+@Serializable
+data class BackendRefundRequest(
+    val id: Int,
+    @SerialName("orderId") val orderId: Int,
+    val status: String,
+    @SerialName("createdAt") val createdAt: String,
 )
 
 @Serializable

@@ -68,4 +68,15 @@ const status = await request(`/orders/${createOrder.order.id}/status`, {
   },
 });
 
-console.log(`Smoke test passed for order ${status.order.id} with status "${status.order.status}"`);
+const refund = await request(`/orders/${createOrder.order.id}/refunds`, {
+  method: 'POST',
+  headers: {
+    authorization: `Bearer ${signup.token}`,
+  },
+});
+
+if (refund.message !== 'Your refund request was received.') {
+  throw new Error(`Unexpected refund response: ${JSON.stringify(refund)}`);
+}
+
+console.log(`Smoke test passed for order ${status.order.id} with status "${status.order.status}" and refund ${refund.refundRequest.id}`);
