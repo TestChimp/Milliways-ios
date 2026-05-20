@@ -82,10 +82,6 @@ class AppViewModel(
         val ok = when (val r = withContext(Dispatchers.IO) { api.signIn(email, password) }) {
             is ApiResult.Ok -> {
                 session = r.value
-                MilliwaysRum.emit(
-                    "auth_session_started",
-                    mapOf("entry.auth_kind" to "sign_in"),
-                )
                 true
             }
             is ApiResult.Err -> {
@@ -103,10 +99,6 @@ class AppViewModel(
         val ok = when (val r = withContext(Dispatchers.IO) { api.signUp(email, password) }) {
             is ApiResult.Ok -> {
                 session = r.value
-                MilliwaysRum.emit(
-                    "auth_session_started",
-                    mapOf("entry.auth_kind" to "sign_up"),
-                )
                 true
             }
             is ApiResult.Err -> {
@@ -153,16 +145,7 @@ class AppViewModel(
             menuLoading = true
             menuError = null
             when (val r = withContext(Dispatchers.IO) { api.fetchMenu() }) {
-                is ApiResult.Ok -> {
-                    menuSections = r.value
-                    MilliwaysRum.emit(
-                        "menu_loaded",
-                        mapOf(
-                            "menu.section_count_bucket" to MilliwaysRum.menuSectionCountBucket(r.value.size),
-                            "cart.line_item_count_bucket" to MilliwaysRum.lineItemCountBucket(cartLines.size),
-                        ),
-                    )
-                }
+                is ApiResult.Ok -> menuSections = r.value
                 is ApiResult.Err -> menuError = r.message
             }
             menuLoading = false
@@ -212,13 +195,6 @@ class AppViewModel(
                     id = r.value.id,
                     status = r.value.status,
                     updatedAt = r.value.createdAt,
-                )
-                MilliwaysRum.emit(
-                    "order_submitted_success",
-                    mapOf(
-                        "cart.line_item_count_bucket" to MilliwaysRum.lineItemCountBucket(cartLines.size),
-                        "order.has_coupon" to if (appliedCouponCode != null) "true" else "false",
-                    ),
                 )
                 Result.success(Unit)
             }

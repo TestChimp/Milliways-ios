@@ -54,7 +54,7 @@ struct MenuView: View {
                                             .onTapGesture {
                                                 selectedItem = MenuItemSelection(
                                                     item: item,
-                                                    sectionKey: MilliwaysRum.sectionKey(from: section.title)
+                                                    sectionKey: menuSectionKey(from: section.title)
                                                 )
                                             }
                                             .padding(.horizontal)
@@ -148,11 +148,6 @@ struct MenuView: View {
                 orderManager: orderManager
             )
         }
-        .onAppear {
-            if !menuSections.isEmpty {
-                emitMenuLoaded()
-            }
-        }
         .task {
             if menuSections.isEmpty {
                 await loadMenu()
@@ -160,14 +155,11 @@ struct MenuView: View {
         }
     }
 
-    private func emitMenuLoaded() {
-        MilliwaysRum.emit(
-            "menu_loaded",
-            metadata: [
-                "menu.section_count_bucket": MilliwaysRum.menuSectionCountBucket(menuSections.count),
-                "cart.line_item_count_bucket": MilliwaysRum.lineItemCountBucket(orderManager.items.count),
-            ]
-        )
+    private func menuSectionKey(from title: String) -> String {
+        let parts = title.lowercased()
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { !$0.isEmpty }
+        return parts.isEmpty ? "unknown" : parts.joined(separator: "_")
     }
 
     @MainActor
@@ -177,7 +169,6 @@ struct MenuView: View {
 
         do {
             menuSections = try await APIClient.shared.fetchMenu()
-            emitMenuLoaded()
         } catch {
             menuError = error.localizedDescription
         }
