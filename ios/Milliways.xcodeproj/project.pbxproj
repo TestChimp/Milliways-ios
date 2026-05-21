@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		3A1F2E023EBB7CE1001943C1 /* TestChimpRum in Frameworks */ = {isa = PBXBuildFile; productRef = 3A1F2E013EBB7CE1001943C1 /* TestChimpRum */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
 		2D9BE56E2EBB7CE1001943C4 /* Milliways.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Milliways.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -27,7 +23,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A1F2E023EBB7CE1001943C1 /* TestChimpRum in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,9 +64,6 @@
 				2D9BE5702EBB7CE1001943C4 /* Milliways */,
 			);
 			name = Milliways;
-			packageProductDependencies = (
-				3A1F2E013EBB7CE1001943C1 /* TestChimpRum */,
-			);
 			productName = Milliways;
 			productReference = 2D9BE56E2EBB7CE1001943C4 /* Milliways.app */;
 			productType = "com.apple.product-type.application";
@@ -100,9 +92,6 @@
 			);
 			mainGroup = 2D9BE5652EBB7CE0001943C4;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				3A1F2E003EBB7CE1001943C1 /* XCRemoteSwiftPackageReference "testchimp-rum-ios" */,
-			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2D9BE56F2EBB7CE1001943C4 /* Products */;
 			projectDirPath = "";
@@ -287,10 +276,6 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TESTCHIMP_API_KEY = "";
-				TESTCHIMP_BACKEND_URL = "https://featureservice-staging.testchimp.io";
-				TESTCHIMP_ENV = QA;
-				TESTCHIMP_PROJECT_ID = "";
 			};
 			name = Debug;
 		};
@@ -326,10 +311,6 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TESTCHIMP_API_KEY = "";
-				TESTCHIMP_BACKEND_URL = "https://featureservice-staging.testchimp.io";
-				TESTCHIMP_ENV = production;
-				TESTCHIMP_PROJECT_ID = "";
 			};
 			name = Release;
 		};
@@ -355,25 +336,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		3A1F2E003EBB7CE1001943C1 /* XCRemoteSwiftPackageReference "testchimp-rum-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/testchimphq/testchimp-rum-ios.git";
-			requirement = {
-				kind = exactVersion;
-				version = 0.1.5;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		3A1F2E013EBB7CE1001943C1 /* TestChimpRum */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3A1F2E003EBB7CE1001943C1 /* XCRemoteSwiftPackageReference "testchimp-rum-ios" */;
-			productName = TestChimpRum;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2D9BE5662EBB7CE1001943C4 /* Project object */;
 }

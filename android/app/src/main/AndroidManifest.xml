@@ -15,21 +15,10 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleTop"
             android:theme="@style/Theme.Milliways">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <!-- TrueCoverage: Mobilewright / @testchimp/playwright opens testchimp-rum://truecoverage/v1/... -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:host="truecoverage"
-                    android:pathPrefix="/v1"
-                    android:scheme="testchimp-rum" />
             </intent-filter>
         </activity>
     </application>
