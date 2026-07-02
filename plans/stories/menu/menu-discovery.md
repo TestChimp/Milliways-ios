@@ -2,15 +2,15 @@
 type: story
 id: US-101
 title: Browse restaurant menu
-created_date: 2026-05-19
+created_date: 2026-05-17
 priority: high
 ---
 
 ## Summary
 
-Guests can view main dishes and other catalog content, including legal or operational disclaimers shown on the menu screen.
+After placing an order, the guest can dismiss the delivery flow and start a new order with a clean cart state.
 
 ## Acceptance criteria
 
-- Main dish items from the catalog are visible when browsing the menu.
-- Shipping-related disclaimer text is visible when scrolled into view.
+* Closing the delivery screen returns to the welcome experience with a clear path to order again.
+* After completing an order and returning to browse, the cart is empty for a new session.

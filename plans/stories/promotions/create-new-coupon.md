@@ -8,4 +8,9 @@ priority: low
 
 ## Summary
 
-Admins should be able to create new coupons that can be distributed to users.
+Guests can enter coupon codes on the cart screen; valid codes adjust totals and invalid codes show a clear error.
+
+## Acceptance criteria
+
+* A valid promotional code applies the expected discount to the cart total.
+* An invalid code shows an error and does not corrupt totals.
