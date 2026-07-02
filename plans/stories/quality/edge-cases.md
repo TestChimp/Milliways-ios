@@ -2,17 +2,15 @@
 type: story
 id: US-105
 title: Cart and checkout edge cases
-created_date: 2026-05-19
+created_date: 2026-05-17
 priority: medium
 ---
 
 ## Summary
 
-Covers defensive behaviour for unusual cart states: empty checkout, copy for singular quantities, minimum quantity on item detail, and cart math when coupons interact with removed lines.
+Signed-in guests can open the account area to see profile information, loyalty tier, and past order amounts; totals shown should be internally consistent.
 
 ## Acceptance criteria
 
-- Empty cart does not crash the app when checkout is attempted (or is blocked gracefully).
-- Singular quantity uses correct singular/plural copy in the sticky summary where applicable.
-- Quantity controls on an item cannot drive quantity below one.
-- Totals remain safe to interpret when discounts and removals combine.
+* Profile shows identifiable user context (e.g. email domain) and loyalty messaging.
+* Aggregate spend aligns with the list of past order prices when both are shown.
